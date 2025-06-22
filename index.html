@@ -777,7 +777,7 @@ import { db } from './database.js';
 window.db = db; // Make db globally accessible for simplicity
 
 async function sendTeamMessage() {
-  const currentVolunteer = await db.getItem('currentVolunteer');
+  const currentVolunteer = JSON.parse(sessionStorage.getItem('currentVolunteer'));
   const messageInput = document.getElementById('chat-message');
   const messageText = messageInput.value.trim();
   if (!messageText) return;
@@ -794,7 +794,7 @@ async function sendTeamMessage() {
 window.sendTeamMessage = sendTeamMessage;
 
 async function loadTeamChat() {
-  const currentVolunteer = await db.getItem('currentVolunteer');
+  const currentVolunteer = JSON.parse(sessionStorage.getItem('currentVolunteer'));
   if (!currentVolunteer) return;
   const chatContainer = document.getElementById('team-chat-messages');
   const messages = await db.getItem('messages', []);
@@ -940,7 +940,7 @@ async function loadAvailableProjects() {
 window.loadAvailableProjects = loadAvailableProjects;
 
 async function applyForRole(projectId, roleType) {
-  const currentVolunteer = await db.getItem('currentVolunteer');
+  const currentVolunteer = JSON.parse(sessionStorage.getItem('currentVolunteer'));
   if (!currentVolunteer) {
     showMessageModal('Error', 'Please log in first');
     return;
@@ -977,7 +977,7 @@ window.applyForRole = applyForRole;
 async function approveApplication(projectId, applicationId) {
   let projects = await db.getItem('projects');
   const project = projects.find(p => p.id === projectId);
-  if (!project || !project.staffing || !projecture.staffing.applications) return;
+  if (!project || !project.staffing || !project.staffing.applications) return;
 
   const applicationIndex = project.staffing.applications.findIndex(app => app.id === applicationId);
   if (applicationIndex === -1) return;
@@ -1122,7 +1122,7 @@ async function loadAnnouncements() {
 window.loadAnnouncements = loadAnnouncements;
 
 async function applyFromAnnouncement(projectId, roleType) {
-    const currentVolunteer = await db.getItem('currentVolunteer');
+    const currentVolunteer = JSON.parse(sessionStorage.getItem('currentVolunteer'));
     if (!currentVolunteer) {
         showLogin();
         return;
@@ -1436,8 +1436,8 @@ window.showMessageModal = showMessageModal;
 document.addEventListener('DOMContentLoaded', async function () {
   await db.init();
   
-  const isAdmin = await db.getItem('isAdminLoggedIn') === true;
-  const currentVolunteer = await db.getItem('currentVolunteer');
+  const isAdmin = sessionStorage.getItem('isAdminLoggedIn') === 'true';
+  const currentVolunteer = JSON.parse(sessionStorage.getItem('currentVolunteer'));
   
   if (isAdmin) {
     updateNavMenu('admin');
@@ -1494,8 +1494,8 @@ function showPage(pageId) {
 }
 window.showPage = showPage;
 
-async function checkAdminAuth() {
-  return await db.getItem('isAdminLoggedIn') === true;
+function checkAdminAuth() {
+  return sessionStorage.getItem('isAdminLoggedIn') === 'true';
 }
 window.checkAdminAuth = checkAdminAuth;
 
@@ -1507,7 +1507,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
   const adminCredentials = await db.getItem('adminCredentials', { username: 'admin', password: 'admin123'});
 
   if (email === adminCredentials.username && password === adminCredentials.password) {
-    await db.setItem('isAdminLoggedIn', true);
+    sessionStorage.setItem('isAdminLoggedIn', 'true');
     showPage('admin');
     const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
     loginModal.hide();
@@ -1525,7 +1525,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
   const volunteer = volunteers.find(v => v.email === email && v.password === password);
 
   if (volunteer) {
-    await db.setItem('currentVolunteer', volunteer);
+    sessionStorage.setItem('currentVolunteer', JSON.stringify(volunteer));
     showPage('volunteer-portal');
     const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
     loginModal.hide();
@@ -1540,9 +1540,9 @@ document.getElementById('loginForm').addEventListener('submit', async function (
   }
 });
 
-async function logout() {
-  await db.setItem('isAdminLoggedIn', false);
-  await db.setItem('currentVolunteer', null);
+function logout() {
+  sessionStorage.removeItem('isAdminLoggedIn');
+  sessionStorage.removeItem('currentVolunteer');
   updateNavMenu(null);
   showPage('welcome');
   
@@ -1621,7 +1621,7 @@ document.getElementById('volunteer-signup-form').addEventListener('submit', asyn
   volunteers.push(newVolunteer);
   await db.setItem('volunteers', volunteers);
 
-  await db.setItem('currentVolunteer', newVolunteer);
+  sessionStorage.setItem('currentVolunteer', JSON.stringify(newVolunteer));
   updateNavMenu(newVolunteer);
   showPage('volunteer-portal');
 
@@ -1898,7 +1898,7 @@ async function savePledge(projectId) {
     };
   }
 
-  const currentUser = await db.getItem('currentVolunteer');
+  const currentUser = JSON.parse(sessionStorage.getItem('currentVolunteer'));
   
   project.fundraising.pledges.push({
     id: Date.now().toString(),

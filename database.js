@@ -77,13 +77,21 @@ class Database {
                 return;
             }
             console.log("Saving data to Google Sheets...");
+
+            // Create a copy of the data to avoid modifying the original object
+            const dataToSave = JSON.parse(JSON.stringify(this.data));
+
+            // Remove session-specific data before saving
+            delete dataToSave.isAdminLoggedIn;
+            delete dataToSave.currentVolunteer;
+            
             try {
                 // To ensure Apps Script's doPost can parse the data, we'll send it as a raw JSON string
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'cors',
                     cache: 'no-cache',
-                    body: JSON.stringify(this.data), // Sending as a raw JSON string
+                    body: JSON.stringify(dataToSave), // Sending the cleaned data
                     headers: {
                         'Content-Type': 'text/plain;charset=utf-8',
                     },
