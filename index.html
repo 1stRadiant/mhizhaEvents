@@ -1,0 +1,2799 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mhizha Events</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    :root {
+        --primary-color: #0d6efd;
+        --secondary-color: #6c757d;
+        --accent-color: #0dcaf0;
+    }
+
+    body {
+        line-height: 1.6;
+    }
+
+    /* Navigation */
+    nav {
+        background: var(--primary-color);
+        padding: 1rem;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .carousel-overlay {
+        height: 600px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+    }
+
+    .carousel-content {
+        max-width: 800px;
+        padding: 20px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-section {
+        display: none;
+    }
+
+    .page {
+        margin-top: 0;
+        display: none;
+        padding: 2rem;
+    }
+
+    .active {
+        display: block;
+    }
+
+    /* Welcome Page */
+    .announcements {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .announcement {
+        background: #f8f9fa;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    /* Gallery */
+    .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .gallery-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 5px;
+        height: 200px;
+        transition: transform 0.3s ease;
+    }
+
+    .gallery-item:hover {
+        transform: scale(1.02);
+    }
+
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Inquiry Form */
+    .inquiry-form {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 5px;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+
+    button {
+        background: var(--accent-color);
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        opacity: 0.9;
+    }
+
+    /* Admin Panel */
+    .admin-panel {
+        display: none;
+        padding: 2rem;
+    }
+
+    .admin-section {
+        background: #f8f9fa;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 5px;
+    }
+
+    .calendar {
+        background: white;
+        padding: 1rem;
+        border-radius: 5px;
+        margin-top: 1rem;
+    }
+
+    .messages {
+        background: white;
+        padding: 1rem;
+        border-radius: 5px;
+        margin-top: 1rem;
+    }
+
+    /* Volunteer Management */
+    .volunteer-card {
+        transition: transform 0.2s;
+    }
+
+    .volunteer-card:hover {
+        transform: translateY(-2px);
+    }
+
+    #volunteers-list {
+        max-height: 500px;
+        overflow-y: auto;
+    }
+
+    .points-badge {
+        background: var(--primary-color);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.8em;
+    }
+
+    /* Chat Styles */
+    .chat-message {
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 8px;
+        max-width: 80%;
+    }
+
+    .chat-message.sent {
+        background: #e3f2fd;
+        margin-left: auto;
+    }
+
+    .chat-message.received {
+        background: #f5f5f5;
+        margin-right: auto;
+    }
+
+    .chat-message p {
+        margin: 5px 0;
+    }
+
+    #team-chat-messages {
+        height: 300px;
+        overflow-y: auto;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .gallery {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        margin-top: 1rem;
+    }
+
+    .calendar-day-header {
+        text-align: center;
+        font-weight: bold;
+        padding: 5px;
+    }
+
+    .calendar-day {
+        border: 1px solid #ddd;
+        padding: 5px;
+        min-height: 80px;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .calendar-day:hover {
+        background: #f0f0f0;
+    }
+
+    .calendar-day.empty {
+        background: #f9f9f9;
+    }
+
+    .calendar-day.has-events {
+        background: #e3f2fd;
+    }
+
+    .event-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--accent-color);
+        border-radius: 50%;
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+    }
+
+    .message {
+        border-bottom: 1px solid #eee;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .message span {
+        color: #666;
+        font-size: 0.8em;
+        margin-left: 10px;
+    }
+
+    #message-list {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 1rem;
+    }
+
+    #welcome > .container {
+        margin-top: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    #welcome .carousel {
+        margin-left: calc(-50vw + 50%);
+        margin-right: calc(-50vw + 50%);
+        width: 100vw;
+        overflow: hidden;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 5%;
+    }
+
+    .carousel-item {
+        position: relative;
+    }
+
+    /* Admin Sidebar */
+    .admin-sidebar {
+        width: 250px;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 56px;
+        background: #343a40;
+        padding: 1rem;
+        transition: transform 0.3s;
+        z-index: 999;
+    }
+
+    .admin-sidebar.collapsed {
+        transform: translateX(-250px);
+    }
+
+    .admin-content {
+        margin-left: 250px;
+        transition: margin 0.3s;
+        padding: 1rem;
+    }
+
+    .admin-content.expanded {
+        margin-left: 0;
+    }
+
+    .sidebar-toggle {
+        position: fixed;
+        left: 250px;
+        top: 70px;
+        background: #343a40;
+        color: white;
+        border: none;
+        padding: 0.5rem;
+        border-radius: 0 5px 5px 0;
+        transition: left 0.3s;
+        z-index: 1000;
+    }
+
+    .sidebar-toggle.collapsed {
+        left: 0;
+    }
+
+    .sidebar-link {
+        display: block;
+        color: white;
+        padding: 0.5rem;
+        text-decoration: none;
+        margin-bottom: 0.5rem;
+        border-radius: 4px;
+    }
+
+    .sidebar-link:hover {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+
+    .sidebar-link.active {
+        background: #0d6efd;
+    }
+</style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-calendar-event"></i> Mhizha Events
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('welcome')">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('inquiry')">Inquiry</a>
+                    </li>
+                    <li class="nav-item" id="login-menu-item">
+                        <a class="nav-link" href="#" onclick="showLogin()">Login</a>
+                    </li>
+                    <li class="nav-item" id="join-menu-item">
+                        <a class="nav-link" href="#" onclick="showPage('join')">Join Us</a>
+                    </li>
+                    <li class="nav-item d-none" id="volunteer-portal-link">
+                        <a class="nav-link" href="#" onclick="showPage('volunteer-portal')">Volunteer Portal</a>
+                    </li>
+                    <li class="nav-item d-none" id="admin-portal-link">
+                        <a class="nav-link" href="#" onclick="showPage('admin')">Admin Portal</a>
+                    </li>
+                    <li class="nav-item d-none" id="user-menu-item">
+                        <div class="dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <span id="user-name">User</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="logout()">Logout</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Page -->
+    <div id="welcome" class="page active">
+        <div class="carousel slide" id="welcomeCarousel" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#welcomeCarousel" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#welcomeCarousel" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#welcomeCarousel" data-bs-slide-to="2"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="carousel-overlay" style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.pexels.com/photos/2833037/pexels-photo-2833037.jpeg') center/cover;">
+                        <div class="carousel-content">
+                            <h2>Unforgettable Events</h2>
+                            <p>Creating magical moments that last a lifetime</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="carousel-overlay" style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.pexels.com/photos/169198/pexels-photo-169198.jpeg') center/cover;">
+                        <div class="carousel-content">
+                            <h2>Birthday Celebrations</h2>
+                            <p>Making your special day truly memorable</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="carousel-overlay" style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.pexels.com/photos/382297/pexels-photo-382297.jpeg') center/cover;">
+                        <div class="carousel-content">
+                            <h2>Social Gatherings</h2>
+                            <p>Where memories are made and shared</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#welcomeCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#welcomeCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+
+        <div class="container mt-5">
+            <h2 class="text-center mb-4">Latest Announcements</h2>
+            <div class="announcements row" id="announcements"></div>
+        </div>
+    </div>
+
+    <!-- Gallery Page -->
+    <div id="gallery" class="page"></div>
+
+    <!-- Inquiry Page -->
+    <div id="inquiry" class="page">
+        <h1>Event Inquiry</h1>
+        <form class="inquiry-form card shadow-sm p-4" id="inquiry-form">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="name">Name:</label>
+                    <input type="text" class="form-control" id="name" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="eventType">Type of Event:</label>
+                    <select class="form-select" id="eventType" required>
+                        <option value>Select event type</option>
+                        <option value="wedding">Wedding</option>
+                        <option value="corporate">Corporate Event</option>
+                        <option value="birthday">Birthday Party</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="date">When:</label>
+                    <input type="date" class="form-control" id="date" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="location">Location:</label>
+                    <input type="text" class="form-control" id="location" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="guests">Number of Guests:</label>
+                    <input type="number" class="form-control" id="guests" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="budget">Budget Range:</label>
+                    <select class="form-select" id="budget" required>
+                        <option value>Select budget range</option>
+                        <option value="0-5000">$0 - $5,000</option>
+                        <option value="5000-10000">$5,000 - $10,000</option>
+                        <option value="10000+">$10,000+</option>
+                    </select>
+                </div>
+                <div class="col-12 mb-3">
+                    <label class="form-label" for="details">Additional Details:</label>
+                    <textarea class="form-control" id="details" rows="4"></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Inquiry</button>
+        </form>
+    </div>
+
+    <!-- Join Us Page -->
+    <div id="join" class="page">
+        <div class="container py-5">
+            <h1>Join Our Team</h1>
+            
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <form id="volunteer-signup-form">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" id="volunteer-name" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="volunteer-email" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Phone</label>
+                                        <input type="tel" class="form-control" id="volunteer-phone" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Role</label>
+                                        <select class="form-select" id="volunteer-role" required>
+                                            <option value>Select Role</option>
+                                            <option value="Catering">Catering</option>
+                                            <option value="Cleaning">Cleaning</option>
+                                            <option value="Media">Media</option>
+                                            <option value="Promotions">Promotions</option>
+                                            <option value="Entertainment">Entertainment</option>
+                                            <option value="Decorations">Decorations</option>
+                                            <option value="Hospitality">Hospitality</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Password</label>
+                                        <input type="password" class="form-control" id="volunteer-password" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Confirm Password</label>
+                                        <input type="password" class="form-control" id="volunteer-password-confirm" required>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label">Skills &amp; Experience</label>
+                                        <textarea class="form-control" id="volunteer-skills" rows="3"></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">Sign Up</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin" class="page">
+        <div class="admin-sidebar">
+            <h4 class="text-white mb-4">Admin Portal</h4>
+            <a href="#" class="sidebar-link" data-section="inquiries">Inquiries</a>
+            <a href="#" class="sidebar-link" data-section="calendar">Team Calendar</a>
+            <a href="#" class="sidebar-link" data-section="messages">Team Messages</a>
+            <a href="#" class="sidebar-link" data-section="volunteers">Volunteer Management</a>
+            <a href="#" class="sidebar-link" data-section="team-leaders">Team Leaders</a>
+            <a href="#" class="sidebar-link" data-section="projects">Projects</a>
+        </div>
+        
+        <button class="sidebar-toggle">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <div class="admin-content">
+            <div id="admin-inquiries" class="admin-section">
+                <h2>Inquiries</h2>
+                <div id="inquiries-list"></div>
+            </div>
+
+            <div id="admin-calendar" class="admin-section d-none">
+                <h2>Team Calendar</h2>
+                <div id="team-calendar"></div>
+            </div>
+
+            <div id="admin-messages" class="admin-section d-none">
+                <h2>Team Messages</h2>
+                <div id="message-list"></div>
+                <div class="form-group">
+                    <textarea class="form-control" id="new-message" placeholder="Type your message"></textarea>
+                    <button class="btn btn-primary mt-2" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+
+            <div id="admin-volunteers" class="admin-section d-none">
+                <h2>Volunteer Management</h2>
+                <div class="row mb-3">
+                    <div class="col">
+                        <select class="form-select" id="volunteer-filter">
+                            <option value="all">All Roles</option>
+                            <option value="Catering">Catering</option>
+                            <option value="Cleaning">Cleaning</option>
+                            <option value="Media">Media</option>
+                            <option value="Promotions">Promotions</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Decorations">Decorations</option>
+                            <option value="Hospitality">Hospitality</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-primary" onclick="sendNotification()">Send Notification</button>
+                    </div>
+                </div>
+                <div id="volunteers-list"></div>
+            </div>
+
+            <div id="admin-team-leaders" class="admin-section d-none">
+                <h2>Team Leaders Management</h2>
+                <div class="row mb-3">
+                    <div class="col">
+                        <select class="form-select" id="team-leader-role">
+                            <option value="">Select Role</option>
+                            <option value="Catering">Catering</option>
+                            <option value="Cleaning">Cleaning</option>
+                            <option value="Media">Media</option>
+                            <option value="Promotions">Promotions</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Decorations">Decorations</option>
+                            <option value="Hospitality">Hospitality</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <select class="form-select" id="team-leader-select">
+                            <option value="">Select Member</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-primary" onclick="assignTeamLeader()">Assign Team Leader</button>
+                    </div>
+                </div>
+                <div id="team-leaders-list"></div>
+            </div>
+
+            <div id="admin-projects" class="admin-section d-none">
+                <h2>Event Project Management</h2>
+                <div class="row mb-3">
+                    <div class="col">
+                        <button class="btn btn-primary" onclick="createNewProject()">New Event Project</button>
+                    </div>
+                    <div class="col">
+                        <select class="form-select" id="project-status-filter">
+                            <option value="all">All Stages</option>
+                            <option value="proposal">Proposal</option>
+                            <option value="budgeting">Budgeting</option>
+                            <option value="staffing">Staffing</option>
+                            <option value="approved">Approved</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="project-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Volunteer Portal -->
+    <div id="volunteer-portal" class="page">
+        <div class="container py-5">
+            <h1>Volunteer Portal</h1>
+            
+            <!-- Notifications Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2>Notifications</h2>
+                </div>
+                <div class="card-body" id="volunteer-notifications">
+                    <!-- Notifications will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Opportunities Board -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2>Opportunities Board</h2>
+                </div>
+                <div class="card-body">
+                    <div id="available-projects"></div>
+                </div>
+            </div>
+
+            <!-- Team Chat -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2>Team Chat</h2>
+                </div>
+                <div class="card-body">
+                    <div id="team-chat-messages" class="mb-3" style="max-height: 300px; overflow-y: auto;">
+                        <!-- Chat messages will appear here -->
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="chat-message" class="form-control" placeholder="Type your message...">
+                        <button class="btn btn-primary" onclick="sendTeamMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Meeting Room -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Video Meeting Room</h2>
+                </div>
+                <div class="card-body">
+                    <div id="video-container" class="mb-3">
+                        <!-- Video elements will be added here -->
+                    </div>
+                    <button class="btn btn-primary me-2" onclick="joinMeeting()">Join Meeting</button>
+                    <button class="btn btn-secondary" onclick="leaveMeeting()">Leave Meeting</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label">Username/Email</label>
+                            <input type="text" class="form-control" id="loginEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script type="module">
+import { db } from './database.js';
+
+window.db = db; // Make db globally accessible for simplicity
+
+async function sendTeamMessage() {
+  const currentVolunteer = await db.getItem('currentVolunteer');
+  const messageInput = document.getElementById('chat-message');
+  const messageText = messageInput.value.trim();
+  if (!messageText) return;
+  let messages = await db.getItem('messages', []);
+  messages.push({
+    text: messageText,
+    sender: currentVolunteer.name,
+    timestamp: new Date().toISOString()
+  });
+  await db.setItem('messages', messages);
+  messageInput.value = '';
+  loadTeamChat();
+}
+window.sendTeamMessage = sendTeamMessage;
+
+async function loadTeamChat() {
+  const currentVolunteer = await db.getItem('currentVolunteer');
+  if (!currentVolunteer) return;
+  const chatContainer = document.getElementById('team-chat-messages');
+  const messages = await db.getItem('messages', []);
+  chatContainer.innerHTML = messages.map(message => `
+                <div class="chat-message ${message.sender === currentVolunteer.name ? 'sent' : 'received'}">
+                    <strong>${message.sender}</strong>
+                    <p>${message.text}</p>
+                    <small class="text-muted">${new Date(message.timestamp).toLocaleString()}</small>
+                </div>
+            `).join('');
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+window.loadTeamChat = loadTeamChat;
+
+async function viewApplications(projectId) {
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === projectId);
+  const applicationsModalId = `applicationsModal-${projectId}`;
+  const applicationsModal = `
+        <div class="modal fade" id="${applicationsModalId}" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Applications - ${project.name}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" id="applicationsModalBody-${projectId}">
+                        ${(project.staffing?.applications || []).length === 0 ? '<p class="text-muted">No applications yet.</p>' : project.staffing.applications.map(app => `
+                                <div class="mb-3">
+                                    <h5>${app.volunteerName} - ${app.roleType}</h5>
+                                    <p>Applied on: ${new Date(app.appliedAt).toLocaleString()}</p>
+                                    <button class="btn btn-sm btn-success me-2" onclick="approveApplication(${projectId}, ${app.id})">
+                                        Approve
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="rejectApplication(${projectId}, ${app.id})">
+                                        Reject
+                                    </button>
+                                </div>
+                            `).join('')}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+  if (!document.getElementById(applicationsModalId)) {
+    document.body.insertAdjacentHTML('beforeend', applicationsModal);
+  } else {
+    document.getElementById(`applicationsModalBody-${projectId}`).innerHTML = (project.staffing?.applications || []).length === 0 ? '<p class="text-muted">No applications yet.</p>' : project.staffing.applications.map(app => `
+                                <div class="mb-3">
+                                    <h5>${app.volunteerName} - ${app.roleType}</h5>
+                                    <p>Applied on: ${new Date(app.appliedAt).toLocaleString()}</p>
+                                    <button class="btn btn-sm btn-success me-2" onclick="approveApplication(${projectId}, ${app.id})">
+                                        Approve
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="rejectApplication(${projectId}, ${app.id})">
+                                        Reject
+                                    </button>
+                                </div>
+                            `).join('');
+  }
+  const modal = new bootstrap.Modal(document.getElementById(applicationsModalId));
+  modal.show();
+}
+window.viewApplications = viewApplications;
+
+async function viewAssigned(projectId) {
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === projectId);
+  const assignedModalId = `assignedModal-${projectId}`;
+  const assignedModal = `
+        <div class="modal fade" id="${assignedModalId}" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Assigned Staff - ${project.name}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        ${(project.staffing?.assigned || []).length === 0 ? '<p class="text-muted">No staff assigned yet.</p>' : `
+                            <ul class="list-group">
+                                ${(project.staffing.assigned || []).map(staff => `
+                                    <li class="list-group-item">${staff.name} - <strong>${staff.role}</strong></li>
+                                `).join('')}
+                            </ul>
+                        `}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+  if (!document.getElementById(assignedModalId)) {
+    document.body.insertAdjacentHTML('beforeend', assignedModal);
+  } else {
+    document.getElementById(assignedModalId).querySelector('.modal-body').innerHTML = 
+        (project.staffing?.assigned || []).length === 0 ? '<p class="text-muted">No staff assigned yet.</p>' : `
+            <ul class="list-group">
+                ${(project.staffing.assigned || []).map(staff => `
+                    <li class="list-group-item">${staff.name} - <strong>${staff.role}</strong></li>
+                `).join('')}
+            </ul>
+        `;
+  }
+  const modal = new bootstrap.Modal(document.getElementById(assignedModalId));
+  modal.show();
+}
+window.viewAssigned = viewAssigned;
+
+async function loadAvailableProjects() {
+  const projects = await db.getItem('projects', []);
+  const container = document.getElementById('available-projects');
+  if (!container) return;
+
+  const availableProjects = projects.filter(p => {
+    if (!p.staffing?.required) return false;
+    return p.staffing.required.some(r => (r.count || 0) > (r.filled || 0));
+  });
+
+  container.innerHTML = availableProjects.map(project => `
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5>${project.name || 'Unnamed Project'}</h5>
+        <p>Required Roles:</p>
+        <ul>
+          ${project.staffing.required.map(role => {
+            const openSpots = (role.count || 0) - (role.filled || 0);
+            if (openSpots <= 0) return '';
+            return `
+              <li>
+                ${role.type} (${openSpots} needed)
+                <button class="btn btn-sm btn-outline-primary" 
+                  onclick="applyForRole(${project.id}, '${role.type}')">
+                  Apply
+                </button>
+              </li>
+            `;
+          }).filter(html => html).join('')}
+        </ul>
+        ${project.budget?.approved ? `<p>Budget Allocation: $${project.budget.approved}</p>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+window.loadAvailableProjects = loadAvailableProjects;
+
+async function applyForRole(projectId, roleType) {
+  const currentVolunteer = await db.getItem('currentVolunteer');
+  if (!currentVolunteer) {
+    showMessageModal('Error', 'Please log in first');
+    return;
+  }
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === projectId);
+  if (!project) return;
+  if (!project.staffing) {
+    project.staffing = {
+      applications: []
+    };
+  }
+  if (!project.staffing.applications) {
+    project.staffing.applications = [];
+  }
+  const existingApplication = project.staffing.applications.find(app => app.volunteerId === currentVolunteer.id && app.roleType === roleType);
+  if (existingApplication) {
+    showMessageModal('Error', 'You have already applied for this role');
+    return;
+  }
+  project.staffing.applications.push({
+    volunteerId: currentVolunteer.id,
+    volunteerName: currentVolunteer.name,
+    roleType: roleType,
+    status: 'pending',
+    appliedAt: new Date().toISOString(),
+    id: Date.now()
+  });
+  await db.setItem('projects', projects);
+  showMessageModal('Success', 'Application submitted successfully!');
+}
+window.applyForRole = applyForRole;
+
+async function approveApplication(projectId, applicationId) {
+  let projects = await db.getItem('projects');
+  const project = projects.find(p => p.id === projectId);
+  if (!project || !project.staffing || !projecture.staffing.applications) return;
+
+  const applicationIndex = project.staffing.applications.findIndex(app => app.id === applicationId);
+  if (applicationIndex === -1) return;
+
+  const application = project.staffing.applications[applicationIndex];
+
+  let volunteers = await db.getItem('volunteers', []);
+  const volunteer = volunteers.find(v => v.id === application.volunteerId);
+  if (!volunteer) {
+      showMessageModal('Error', 'Volunteer associated with this application could not be found.');
+      // Optionally remove the broken application
+      project.staffing.applications.splice(applicationIndex, 1);
+      await db.setItem('projects', projects);
+      viewApplications(projectId);
+      return;
+  }
+
+  if (!project.staffing.assigned) {
+    project.staffing.assigned = [];
+  }
+  
+  // Check if volunteer is already assigned to this project to prevent duplicates
+  if (project.staffing.assigned.some(a => a.id === volunteer.id)) {
+      showMessageModal('Info', `${volunteer.name} is already assigned to this project.`);
+  } else {
+      project.staffing.assigned.push({
+        id: volunteer.id,
+        name: volunteer.name,
+        role: application.roleType
+      });
+
+      if (project.staffing.required) {
+        const requiredRole = project.staffing.required.find(r => r.type === application.roleType);
+        if (requiredRole) {
+          requiredRole.filled = (requiredRole.filled || 0) + 1;
+        }
+      }
+  }
+
+  // Remove the application
+  project.staffing.applications.splice(applicationIndex, 1);
+  
+  await db.setItem('projects', projects);
+  
+  // Refresh the applications modal
+  const modalId = `applicationsModal-${projectId}`;
+  const modalElement = document.getElementById(modalId);
+  if (modalElement && bootstrap.Modal.getInstance(modalElement)) {
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    modal.hide();
+    modalElement.addEventListener('hidden.bs.modal', () => {
+        viewApplications(projectId).then(() => {
+            const newModal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+            if (newModal) {
+              newModal.show();
+            }
+        });
+    }, { once: true });
+  } else {
+      viewApplications(projectId);
+  }
+  
+  // Also refresh the main project list to reflect changes in 'Assigned' button etc.
+  loadProjects();
+}
+window.approveApplication = approveApplication;
+
+async function rejectApplication(projectId, applicationId) {
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === projectId);
+  if (!project || !project.staffing || !project.staffing.applications) return;
+  project.staffing.applications = project.staffing.applications.filter(app => app.id !== applicationId);
+  await db.setItem('projects', projects);
+  const modalId = `applicationsModal-${projectId}`;
+  const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+  modal.hide();
+  viewApplications(projectId);
+}
+window.rejectApplication = rejectApplication;
+
+async function generateVacancyAnnouncements(projectId) {
+  const projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === projectId);
+  if (!project || !project.staffing || !project.staffing.required) {
+    console.error("Invalid project or missing staffing data");
+    return;
+  }
+  let announcements = await db.getItem('announcements', []);
+  project.staffing.required.forEach(role => {
+    const openSpots = role.count - (role.filled || 0);
+    if (openSpots > 0) {
+      announcements.push({
+        title: `Volunteer Needed: ${role.type}`,
+        content: `We need ${openSpots} volunteers for ${role.type} role in project: ${project.name}. Click to apply!`,
+        projectId: projectId,
+        roleType: role.type,
+        date: new Date().toISOString()
+      });
+    }
+  });
+  await db.setItem('announcements', announcements);
+  showMessageModal('Success', 'Vacancy announcements have been generated!');
+  
+  if (document.getElementById('volunteer-portal').classList.contains('active')) {
+    loadAvailableProjects();
+  }
+}
+window.generateVacancyAnnouncements = generateVacancyAnnouncements;
+
+async function loadAnnouncements() {
+  const announcements = await db.getItem('announcements', []);
+  const container = document.getElementById('announcements');
+  if (!container) return;
+  container.innerHTML = '';
+  if (!announcements) return;
+  announcements.forEach(announcement => {
+    const div = document.createElement('div');
+    div.className = 'col-md-6 col-lg-4 mb-4';
+    div.innerHTML = `
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h3 class="card-title h5">${announcement.title}</h3>
+          <p class="card-text">${announcement.content}</p>
+          ${announcement.type === 'fundraising' ? `
+            <button class="btn btn-sm btn-success mt-2" 
+              onclick="makePledge(${announcement.projectId})">
+              Make Pledge
+            </button>
+          ` : ''}
+          ${announcement.projectId && announcement.roleType ? `
+            <button class="btn btn-sm btn-primary mt-2"
+                onclick="applyFromAnnouncement('${announcement.projectId}', '${announcement.roleType}')">
+                Apply Now
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+window.loadAnnouncements = loadAnnouncements;
+
+async function applyFromAnnouncement(projectId, roleType) {
+    const currentVolunteer = await db.getItem('currentVolunteer');
+    if (!currentVolunteer) {
+        showLogin();
+        return;
+    }
+    applyForRole(parseInt(projectId), roleType);
+}
+window.applyFromAnnouncement = applyFromAnnouncement;
+
+async function loadGallery() {
+  const gallery = await db.getItem('gallery', []);
+  const container = document.getElementById('gallery-grid');
+  container.innerHTML = '';
+  gallery.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'gallery-item';
+    div.innerHTML = `
+                        <img src="${item.image}" alt="${item.title}">
+                    `;
+    container.appendChild(div);
+  });
+}
+window.loadGallery = loadGallery;
+
+document.getElementById('inquiry-form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const inquiry = {
+    name: document.getElementById('name').value,
+    email: document.getElementById('email').value,
+    eventType: document.getElementById('eventType').value,
+    date: document.getElementById('date').value,
+    location: document.getElementById('location').value,
+    guests: document.getElementById('guests').value,
+    budget: document.getElementById('budget').value,
+    details: document.getElementById('details').value,
+    status: 'new'
+  };
+  let inquiries = await db.getItem('inquiries', []);
+  inquiries.push(inquiry);
+  await db.setItem('inquiries', inquiries);
+  showMessageModal('Success', 'Thank you for your inquiry! We will contact you soon.');
+  this.reset();
+});
+
+async function loadInquiries() {
+  const inquiries = await db.getItem('inquiries', []);
+  const container = document.getElementById('inquiries-list');
+  container.innerHTML = '';
+  inquiries.forEach((inquiry, index) => {
+    const div = document.createElement('div');
+    div.className = 'inquiry';
+    div.innerHTML = `
+                        <h3>${inquiry.name} - ${inquiry.eventType}</h3>
+                        <p>Date: ${inquiry.date}</p>
+                        <p>Location: ${inquiry.location}</p>
+                        <p>Guests: ${inquiry.guests}</p>
+                        <p>Budget: ${inquiry.budget}</p>
+                        <p>Details: ${inquiry.details}</p>
+                        <button class="btn btn-secondary" onclick="updateInquiryStatus(${index})">
+                            ${inquiry.status === 'new' ? 'Mark as Processed' : 'Mark as New'}
+                        </button>
+                    `;
+    container.appendChild(div);
+  });
+}
+window.loadInquiries = loadInquiries;
+
+async function updateInquiryStatus(index) {
+  let inquiries = await db.getItem('inquiries', []);
+  if (!inquiries || !inquiries[index]) return;
+  inquiries[index].status = inquiries[index].status === 'new' ? 'processed' : 'new';
+  await db.setItem('inquiries', inquiries);
+  loadInquiries();
+}
+window.updateInquiryStatus = updateInquiryStatus;
+
+async function sendMessage() {
+  const messageText = document.getElementById('new-message').value;
+  if (!messageText.trim()) return;
+  let messages = await db.getItem('messages', []);
+  messages.push({
+    text: messageText,
+    sender: 'Admin',
+    timestamp: new Date().toISOString()
+  });
+  await db.setItem('messages', messages);
+  document.getElementById('new-message').value = '';
+  loadMessages();
+}
+window.sendMessage = sendMessage;
+
+async function loadMessages() {
+  const messages = await db.getItem('messages', []);
+  const container = document.getElementById('message-list');
+  container.innerHTML = '';
+  messages.forEach(message => {
+    const div = document.createElement('div');
+    div.className = 'message';
+    div.innerHTML = `
+                        <strong>${message.sender}</strong>
+                        <span>${new Date(message.timestamp).toLocaleString()}</span>
+                        <p>${message.text}</p>
+                    `;
+    container.appendChild(div);
+  });
+  container.scrollTop = container.scrollHeight;
+}
+window.loadMessages = loadMessages;
+
+async function loadCalendar() {
+  const calendar = document.getElementById('team-calendar');
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+  const events = await db.getItem('events', []);
+  const calendarHTML = `
+                <div class="calendar-header">
+                    <h3>${new Date(currentYear, currentMonth).toLocaleString('default', {
+    month: 'long'
+  })} ${currentYear}</h3>
+                </div>
+                <div class="calendar-grid">
+                    ${generateCalendarDays(currentYear, currentMonth, events)}
+                </div>
+                <button class="btn btn-primary" onclick="addEvent()">Add Event</button>
+            `;
+  calendar.innerHTML = calendarHTML;
+}
+window.loadCalendar = loadCalendar;
+
+function generateCalendarDays(year, month, events) {
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const daysInMonth = lastDay.getDate();
+  const startingDay = firstDay.getDay();
+  let calendarDays = `
+                <div class="calendar-day-header">Sun</div>
+                <div class="calendar-day-header">Mon</div>
+                <div class="calendar-day-header">Tue</div>
+                <div class="calendar-day-header">Wed</div>
+                <div class="calendar-day-header">Thu</div>
+                <div class="calendar-day-header">Fri</div>
+                <div class="calendar-day-header">Sat</div>
+            `;
+  for (let i = 0; i < startingDay; i++) {
+    calendarDays += '<div class="calendar-day empty"></div>';
+  }
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+    const dayEvents = events.filter(event => event.date === date);
+    calendarDays += `
+                    <div class="calendar-day ${dayEvents.length ? 'has-events' : ''}" onclick="showEvents('${date}')">
+                        ${day}
+                        ${dayEvents.map(event => `<div class="event-dot"></div>`).join('')}
+                    </div>
+                `;
+  }
+  return calendarDays;
+}
+window.generateCalendarDays = generateCalendarDays;
+
+function addEvent() {
+  const modalId = 'addEventModal';
+  const modalHtml = `
+    <div class="modal fade" id="${modalId}" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add New Event</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group mb-3">
+              <label for="eventTitle" class="form-label">Event Title</label>
+              <input type="text" class="form-control" id="eventTitle" required>
+            </div>
+            <div class="form-group">
+              <label for="eventDate" class="form-label">Event Date</label>
+              <input type="date" class="form-control" id="eventDate" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="saveNewEvent()">Add Event</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  const modal = new bootstrap.Modal(document.getElementById(modalId));
+  modal.show();
+}
+window.addEvent = addEvent;
+
+async function saveNewEvent() {
+  const title = document.getElementById('eventTitle').value;
+  const date = document.getElementById('eventDate').value;
+  if (!title || !date) {
+    showMessageModal('Error', 'Please fill in all fields');
+    return;
+  }
+  let events = await db.getItem('events', []);
+  events.push({
+    title,
+    date,
+    createdAt: new Date().toISOString()
+  });
+  await db.setItem('events', events);
+  const modal = bootstrap.Modal.getInstance(document.getElementById('addEventModal'));
+  modal.hide();
+  loadCalendar();
+}
+window.saveNewEvent = saveNewEvent;
+
+async function updateProjectStatus(projectId) {
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === projectId);
+  if (!project) return;
+  const statusFlow = {
+    'proposal': 'budgeting',
+    'budgeting': 'staffing',
+    'staffing': 'approved',
+    'approved': 'in-progress',
+    'in-progress': 'completed',
+    'completed': 'completed'
+  };
+  const modalId = 'updateStatusModal';
+  const modalHtml = `
+    <div class="modal fade" id="${modalId}" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Update Project Status</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label">Current Status: ${project.status || 'proposal'}</label>
+              <select class="form-select" id="newProjectStatus">
+                <option value="proposal">Proposal</option>
+                <option value="budgeting">Budgeting</option>
+                <option value="staffing">Staffing</option>
+                <option value="approved">Approved</option>
+                <option value="in-progress">In Progress</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="saveProjectStatus(${projectId})">Update</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  const modal = new bootstrap.Modal(document.getElementById(modalId));
+  modal.show();
+  document.getElementById('newProjectStatus').value = project.status || 'proposal';
+}
+window.updateProjectStatus = updateProjectStatus;
+
+async function saveProjectStatus(projectId) {
+  const newStatus = document.getElementById('newProjectStatus').value;
+  if (!newStatus) {
+    showMessageModal('Error', 'Please select a status');
+    return;
+  }
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === projectId);
+  if (!project) return;
+  project.status = newStatus;
+  await db.setItem('projects', projects);
+  const modal = bootstrap.Modal.getInstance(document.getElementById('updateStatusModal'));
+  modal.hide();
+  loadProjects();
+}
+window.saveProjectStatus = saveProjectStatus;
+
+function showMessageModal(title, message) {
+  const modalId = 'messageModal';
+  const modalHtml = `
+    <div class="modal fade" id="${modalId}" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">${title}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <p>${message}</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  const existingModal = document.getElementById(modalId);
+  if (existingModal) {
+    existingModal.remove();
+  }
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  const modal = new bootstrap.Modal(document.getElementById(modalId));
+  modal.show();
+}
+window.showMessageModal = showMessageModal;
+
+document.addEventListener('DOMContentLoaded', async function () {
+  await db.init();
+  
+  const isAdmin = await db.getItem('isAdminLoggedIn') === true;
+  const currentVolunteer = await db.getItem('currentVolunteer');
+  
+  if (isAdmin) {
+    updateNavMenu('admin');
+  } else if (currentVolunteer) {
+    updateNavMenu(currentVolunteer);
+  }
+  
+  loadAnnouncements();
+  loadGallery();
+  setInterval(() => {
+    if (document.getElementById('admin').classList.contains('active')) {
+      loadAdminPanel();
+    }
+  }, 30000);
+  document.getElementById('team-leader-role').addEventListener('change', loadTeamLeaderOptions);
+  document.getElementById('project-status-filter').addEventListener('change', loadProjects);
+  
+  const pages = document.querySelectorAll('.page');
+  pages.forEach(page => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && 
+            mutation.attributeName === 'class' &&
+            page.classList.contains('active')) {
+          if (page.id === 'volunteer-portal') {
+            loadAvailableProjects();
+            loadTeamChat();
+          }
+        }
+      });
+    });
+    observer.observe(page, { attributes: true });
+  });
+});
+
+function showPage(pageId) {
+  if (pageId === 'admin' && !checkAdminAuth()) {
+    showLogin();
+    return;
+  }
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('active');
+  });
+  document.getElementById(pageId).classList.add('active');
+  
+  const navbarCollapse = document.querySelector('.navbar-collapse');
+  if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+    bootstrap.Collapse.getInstance(navbarCollapse).hide();
+  }
+
+  if (pageId === 'admin' && checkAdminAuth()) {
+    loadAdminPanel();
+  }
+}
+window.showPage = showPage;
+
+async function checkAdminAuth() {
+  return await db.getItem('isAdminLoggedIn') === true;
+}
+window.checkAdminAuth = checkAdminAuth;
+
+document.getElementById('loginForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+
+  const adminCredentials = await db.getItem('adminCredentials', { username: 'admin', password: 'admin123'});
+
+  if (email === adminCredentials.username && password === adminCredentials.password) {
+    await db.setItem('isAdminLoggedIn', true);
+    showPage('admin');
+    const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+    loginModal.hide();
+    loadAdminPanel();
+    updateNavMenu('admin');
+    
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+      bootstrap.Collapse.getInstance(navbarCollapse).hide();
+    }
+    return;
+  }
+
+  const volunteers = await db.getItem('volunteers', []);
+  const volunteer = volunteers.find(v => v.email === email && v.password === password);
+
+  if (volunteer) {
+    await db.setItem('currentVolunteer', volunteer);
+    showPage('volunteer-portal');
+    const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+    loginModal.hide();
+    updateNavMenu(volunteer);
+    
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+      bootstrap.Collapse.getInstance(navbarCollapse).hide();
+    }
+  } else {
+    showMessageModal('Error', 'Invalid credentials');
+  }
+});
+
+async function logout() {
+  await db.setItem('isAdminLoggedIn', false);
+  await db.setItem('currentVolunteer', null);
+  updateNavMenu(null);
+  showPage('welcome');
+  
+  const navbarCollapse = document.querySelector('.navbar-collapse');
+  if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+    bootstrap.Collapse.getInstance(navbarCollapse).hide();
+  }
+}
+window.logout = logout;
+
+document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('click', function(event) {
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    const toggleButton = document.querySelector('.navbar-toggler');
+    
+    if (navbarCollapse.classList.contains('show') && 
+        !navbarCollapse.contains(event.target) && 
+        !toggleButton.contains(event.target)) {
+        bootstrap.Collapse.getInstance(navbarCollapse).hide();
+    }
+  });
+});
+
+function updateNavMenu(user) {
+  const loginItem = document.getElementById('login-menu-item');
+  const joinItem = document.getElementById('join-menu-item');
+  const userItem = document.getElementById('user-menu-item');
+  const volunteerPortalLink = document.getElementById('volunteer-portal-link');
+  const adminPortalLink = document.getElementById('admin-portal-link');
+  const userName = document.getElementById('user-name');
+
+  if (user) {
+    loginItem.classList.add('d-none');
+    joinItem.classList.add('d-none');
+    userItem.classList.remove('d-none');
+    
+    if (user === 'admin') {
+      volunteerPortalLink.classList.add('d-none');
+      adminPortalLink.classList.remove('d-none');
+      userName.textContent = 'Admin';
+    } else {
+      volunteerPortalLink.classList.remove('d-none'); 
+      adminPortalLink.classList.add('d-none');
+      userName.textContent = user.name;
+    }
+  } else {
+    loginItem.classList.remove('d-none');
+    joinItem.classList.remove('d-none');
+    userItem.classList.add('d-none');
+    volunteerPortalLink.classList.add('d-none');
+    adminPortalLink.classList.add('d-none');
+  }
+}
+window.updateNavMenu = updateNavMenu;
+
+document.getElementById('volunteer-signup-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const newVolunteer = {
+    id: Date.now(),
+    name: document.getElementById('volunteer-name').value,
+    email: document.getElementById('volunteer-email').value,
+    phone: document.getElementById('volunteer-phone').value,
+    role: document.getElementById('volunteer-role').value,
+    password: document.getElementById('volunteer-password').value,
+    skills: document.getElementById('volunteer-skills').value,
+    points: 0
+  };
+
+  if (newVolunteer.password !== document.getElementById('volunteer-password-confirm').value) {
+    showMessageModal('Error', 'Passwords do not match');
+    return;
+  }
+
+  let volunteers = await db.getItem('volunteers', []);
+  volunteers.push(newVolunteer);
+  await db.setItem('volunteers', volunteers);
+
+  await db.setItem('currentVolunteer', newVolunteer);
+  updateNavMenu(newVolunteer);
+  showPage('volunteer-portal');
+
+  this.reset();
+
+  showMessageModal('Success', 'Welcome! You have successfully joined as a volunteer.');
+});
+
+function showLogin() {
+  const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+  modal.show();
+}
+window.showLogin = showLogin;
+
+async function loadTeamLeaderOptions() {
+  const selectedRole = document.getElementById('team-leader-role').value;
+  const teamLeaderSelect = document.getElementById('team-leader-select');
+  if (!selectedRole) {
+    teamLeaderSelect.innerHTML = '<option value="">Select Member</option>';
+    return;
+  }
+  
+  const volunteers = await db.getItem('volunteers', []);
+  const eligibleVolunteers = volunteers.filter(v => v.role === selectedRole && !v.isTeamLeader);
+
+  teamLeaderSelect.innerHTML = `
+    <option value="">Select Member</option>
+    ${eligibleVolunteers.map(v => `
+      <option value="${v.id}">${v.name}</option>
+    `).join('')}
+  `;
+}
+window.loadTeamLeaderOptions = loadTeamLeaderOptions;
+
+async function assignTeamLeader() {
+  const roleSelect = document.getElementById('team-leader-role');
+  const memberSelect = document.getElementById('team-leader-select');
+  
+  if (!roleSelect.value || !memberSelect.value) {
+    showMessageModal('Error', 'Please select both role and member');
+    return;
+  }
+
+  let volunteers = await db.getItem('volunteers', []);
+  const volunteer = volunteers.find(v => v.id === parseInt(memberSelect.value));
+  
+  if (!volunteer) {
+    showMessageModal('Error', 'Selected volunteer not found');
+    return;
+  }
+
+  volunteer.isTeamLeader = true;
+  await db.setItem('volunteers', volunteers);
+  
+  loadTeamLeaders();
+  loadTeamLeaderOptions();
+  showMessageModal('Success', `${volunteer.name} has been assigned as team leader for ${roleSelect.value}`);
+}
+window.assignTeamLeader = assignTeamLeader;
+
+async function removeTeamLeader(volunteerId) {
+  let volunteers = await db.getItem('volunteers');
+  const volunteer = volunteers.find(v => v.id === volunteerId);
+  
+  if (!volunteer) return;
+  
+  volunteer.isTeamLeader = false;
+  await db.setItem('volunteers', volunteers);
+  loadTeamLeaders();
+  loadTeamLeaderOptions();
+}
+window.removeTeamLeader = removeTeamLeader;
+
+function generateBudgetFlowData(project) {
+  const dates = Array.from({
+    length: 7
+  }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (6 - i));
+    return date.toISOString().split('T')[0];
+  });
+  const expendituresByDate = {};
+  project.budget.items?.forEach(item => {
+    const date = item.date.split('T')[0];
+    expendituresByDate[date] = (expendituresByDate[date] || 0) + item.amount;
+  });
+  let cumulative = 0;
+  const spending = dates.map(date => {
+    cumulative += expendituresByDate[date] || 0;
+    return cumulative;
+  });
+  const pledges = project.fundraising?.pledges || [];
+  return {
+    labels: dates,
+    datasets: [{
+      label: 'Cumulative Spending',
+      data: spending,
+      borderColor: '#0d6efd',
+      tension: 0.1
+    }, {
+      label: 'Budget Limit', 
+      data: dates.map(() => project.budget.approved),
+      borderColor: '#dc3545',
+      borderDash: [5, 5]
+    }, {
+      label: 'Fundraising Progress',
+      data: dates.map(() => project.fundraising?.received || 0),
+      borderColor: '#198754',
+      borderDash: [3, 3]
+    }, {
+      label: 'Confirmed Amount',
+      data: dates.map(() => project.fundraising?.confirmed || 0),
+      borderColor: '#ffc107',
+      borderDash: [2, 2]
+    }]
+  };
+}
+window.generateBudgetFlowData = generateBudgetFlowData;
+
+async function confirmPledgePayment(projectId, pledgeId) {
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === projectId);
+  
+  if (!project || !project.fundraising) return;
+  
+  const pledge = project.fundraising.pledges.find(p => p.id === pledgeId);
+  if (!pledge) return;
+
+  pledge.confirmed = true;
+  
+  project.fundraising.confirmed = (project.fundraising.confirmed || 0) + pledge.amount;
+
+  await db.setItem('projects', projects);
+  
+  // Refresh both projects list and budget modal
+  loadProjects();
+  editBudget(projectId);
+}
+window.confirmPledgePayment = confirmPledgePayment;
+
+function startFundraising(projectId) {
+  const modalId = `fundraisingModal-${projectId}`;
+  const modalHtml = `
+    <div class="modal fade" id="${modalId}" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Start Fundraising Campaign</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Campaign Message</label>
+              <textarea class="form-control" id="campaign-message-${projectId}" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="saveFundraisingCampaign(${projectId})">
+              Start Campaign
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if (!document.getElementById(modalId)) {
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  }
+  const modal = new bootstrap.Modal(document.getElementById(modalId));
+  modal.show();
+}
+window.startFundraising = startFundraising;
+
+async function saveFundraisingCampaign(projectId) {
+  const message = document.getElementById(`campaign-message-${projectId}`).value;
+  if (!message) {
+    showMessageModal('Error', 'Please enter a campaign message');
+    return;
+  }
+
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === projectId);
+  
+  if (!project.fundraising) {
+    project.fundraising = {
+      active: true,
+      message: message,
+      received: 0,
+      confirmed: 0,
+      pledges: []
+    };
+  }
+
+  // Add fundraising announcement
+  let announcements = await db.getItem('announcements', []);
+  announcements.push({
+    title: `Fundraising: ${project.name}`,
+    content: message,
+    type: 'fundraising',
+    projectId: projectId,
+    date: new Date().toISOString()
+  });
+
+  await db.setItem('projects', projects);
+  await db.setItem('announcements', announcements);
+  
+  const modal = bootstrap.Modal.getInstance(document.getElementById(`fundraisingModal-${projectId}`));
+  modal.hide();
+  
+  loadProjects();
+  loadAnnouncements();
+}
+window.saveFundraisingCampaign = saveFundraisingCampaign;
+
+function makePledge(projectId) {
+  const modalId = `pledgeModal-${projectId}`;
+  const modalHtml = `
+    <div class="modal fade" id="${modalId}" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Make a Pledge</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Amount ($)</label>
+              <input type="number" class="form-control" id="pledge-amount-${projectId}">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Message (Optional)</label>
+              <textarea class="form-control" id="pledge-message-${projectId}" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="savePledge(${projectId})">
+              Submit Pledge
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if (!document.getElementById(modalId)) {
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  }
+  const modal = new bootstrap.Modal(document.getElementById(modalId));
+  modal.show();
+}
+window.makePledge = makePledge;
+
+async function savePledge(projectId) {
+  const amount = parseFloat(document.getElementById(`pledge-amount-${projectId}`).value);
+  const message = document.getElementById(`pledge-message-${projectId}`).value;
+
+  if (!amount || amount <= 0) {
+    showMessageModal('Error', 'Please enter a valid amount');
+    return;
+  }
+
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === projectId);
+  
+  if (!project.fundraising) {
+    project.fundraising = {
+      active: true,
+      received: 0,
+      confirmed: 0,
+      pledges: []
+    };
+  }
+
+  const currentUser = await db.getItem('currentVolunteer');
+  
+  project.fundraising.pledges.push({
+    id: Date.now().toString(),
+    amount,
+    message,
+    userId: currentUser?.id,
+    userName: currentUser?.name || 'Anonymous',
+    date: new Date().toISOString(),
+    confirmed: false
+  });
+
+  project.fundraising.received = (project.fundraising.received || 0) + amount;
+
+  await db.setItem('projects', projects);
+  
+  const modal = bootstrap.Modal.getInstance(document.getElementById(`pledgeModal-${projectId}`));
+  modal.hide();
+  
+  // Refresh both projects list and budget modal if open
+  loadProjects();
+  
+  // If budget modal is open for this project, refresh it
+  const budgetModal = document.getElementById(`budgetModal-${projectId}`);
+  if (budgetModal && bootstrap.Modal.getInstance(budgetModal)) {
+    editBudget(projectId);
+  }
+  
+  showMessageModal('Success', 'Thank you for your pledge!');
+}
+window.savePledge = savePledge;
+
+async function loadProjects() {
+  const projects = await db.getItem('projects', []);
+  const statusFilter = document.getElementById('project-status-filter').value;
+  const container = document.getElementById('project-list');
+  if (!container) return;
+
+  const filteredProjects = statusFilter === 'all' ? projects : projects.filter(p => p.status === statusFilter);
+  container.innerHTML = filteredProjects.map(project => `
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0 d-flex justify-content-between align-items-center">
+          ${project.name}
+          <span class="badge bg-${getStatusBadgeColor(project.status)}">${project.status}</span>
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <h6>Budget</h6>
+            <p>Proposed: $${project.budget?.proposed || 0}</p>
+            <p>Approved: $${project.budget?.approved || 0}</p>
+            <button class="btn btn-sm btn-outline-primary" onclick="editBudget(${project.id})">
+              Manage Budget
+            </button>
+          </div>
+          <div class="col-md-6">
+            <h6>Staffing</h6>
+            <button class="btn btn-sm btn-outline-primary me-2" onclick="manageStaffing(${project.id})">
+              Required Roles
+            </button>
+            <button class="btn btn-sm btn-outline-info me-2" onclick="viewApplications(${project.id})">
+              Applications
+            </button>
+            <button class="btn btn-sm btn-outline-success" onclick="viewAssigned(${project.id})">
+              Assigned
+            </button>
+          </div>
+        </div>
+        <div class="chart-container" style="height: 200px;">
+          <canvas id="budget-chart-${project.id}"></canvas>
+        </div>
+        <div class="row mb-3">
+          <div class="col">
+            <h6>Fundraising Progress</h6>
+            <div class="progress mb-2" style="height: 20px;">
+              <div class="progress-bar bg-warning" role="progressbar" 
+                style="width: ${Math.min((project.fundraising?.confirmed || 0) / (project.budget?.proposed || 1) * 100, 100)}%">
+                Confirmed: $${project.fundraising?.confirmed || 0}
+              </div>
+              <div class="progress-bar bg-success" role="progressbar" 
+                style="width: ${Math.min(((project.fundraising?.received || 0) - (project.fundraising?.confirmed || 0)) / (project.budget?.proposed || 1) * 100, 100)}%">
+                Pending: $${(project.fundraising?.received || 0) - (project.fundraising?.confirmed || 0)}
+              </div>
+            </div>
+            <p class="text-muted">Total Required: $${project.budget?.proposed || 0}</p>
+            ${project.fundraising?.active ? `
+              <button class="btn btn-sm btn-success" onclick="makePledge(${project.id})">Make Pledge</button>
+            ` : `
+              <button class="btn btn-sm btn-primary" onclick="startFundraising(${project.id})">Start Fundraising</button>
+            `}
+          </div>
+        </div>
+        <div class="mt-3">
+          <button class="btn btn-sm btn-primary" onclick="updateProjectStatus(${project.id})">
+            Update Status
+          </button>
+          <button class="btn btn-sm btn-danger" onclick="deleteProject(${project.id})">
+            Delete Project
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  filteredProjects.forEach(project => {
+    const ctx = document.getElementById(`budget-chart-${project.id}`)?.getContext('2d');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'line',
+        data: generateBudgetFlowData(project),
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+  });
+}
+window.loadProjects = loadProjects;
+
+function getStatusBadgeColor(status) {
+  const colors = {
+    'proposal': 'secondary',
+    'budgeting': 'info',
+    'staffing': 'primary',
+    'approved': 'success',
+    'in-progress': 'warning',
+    'completed': 'dark'
+  };
+  return colors[status] || 'secondary';
+}
+window.getStatusBadgeColor = getStatusBadgeColor;
+
+function createNewProject() {
+  const modalId = 'newProjectModal';
+  const modalHtml = `
+    <div class="modal fade" id="${modalId}" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Create New Project</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="projectName" class="form-label">Project Name</label>
+              <input type="text" class="form-control" id="projectName" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="saveNewProject()">Create</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  const modal = new bootstrap.Modal(document.getElementById(modalId));
+  modal.show();
+}
+window.createNewProject = createNewProject;
+
+async function saveNewProject() {
+  const projectName = document.getElementById('projectName').value;
+  if (!projectName) {
+    showMessageModal('Error', 'Please enter a project name');
+    return;
+  }
+  const project = {
+    id: Date.now(),
+    name: projectName,
+    status: 'proposal',
+    budget: {
+      proposed: 0,
+      approved: 0,
+      items: []
+    },
+    staffing: {
+      required: [],
+      applications: [],
+      assigned: []
+    },
+    createdAt: new Date().toISOString()
+  };
+  let projects = await db.getItem('projects', []);
+  projects.push(project);
+  await db.setItem('projects', projects);
+  const modal = bootstrap.Modal.getInstance(document.getElementById('newProjectModal'));
+  modal.hide();
+  loadProjects();
+}
+window.saveNewProject = saveNewProject;
+
+async function editBudget(projectId) {
+  projectId = parseInt(projectId);
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === projectId);
+  if (!project) return;
+  if (!project.budget) {
+    project.budget = {
+      proposed: 0,
+      approved: 0,
+      items: []
+    };
+  }
+  if (!project.budget.items) {
+    project.budget.items = [];
+  }
+  const budgetModalId = `budgetModal-${projectId}`;
+  const budgetModal = `
+                <div class="modal fade" id="${budgetModalId}" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Manage Budget - ${project.name}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Proposed Budget</label>
+                                        <input type="number" class="form-control" id="proposed-budget-${projectId}"
+                                          value="${project.budget?.proposed || 0}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Approved Budget</label>
+                                        <input type="number" class="form-control" id="approved-budget-${projectId}"
+                                          value="${project.budget?.approved || 0}">
+                                    </div>
+                                </div>
+
+                                <h6 class="mt-4">Add Expenditure Item</h6>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" id="item-description-${projectId}" placeholder="Description">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="number" class="form-control" id="item-amount-${projectId}" placeholder="Amount">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="date" class="form-control" id="item-date-${projectId}">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button class="btn btn-primary w-100" onclick="addBudgetItem(${projectId})">Add</button>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <h6>Expenditure Items</h6>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Description</th>
+                                                    <th>Amount</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="budget-items-list-${projectId}">
+                                                ${(project.budget?.items || []).map(item => `
+                                                    <tr>
+                                                        <td>${new Date(item.date).toLocaleDateString()}</td>
+                                                        <td>${item.description}</td>
+                                                        <td>$${item.amount}</td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-danger" 
+                                                                onclick="removeBudgetItem('${projectId}', '${item.id}')">
+                                                                Remove
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                `).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="mt-4 mb-4">
+                                    <h6>Fundraising Details</h6>
+                                    <p>Total Pledged: $${project.fundraising?.received || 0}</p>
+                                    <p>Total Confirmed: $${project.fundraising?.confirmed || 0}</p>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Pledger</th>
+                                                    <th>Amount</th>
+                                                    <th>Message</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${(project.fundraising?.pledges || []).map(pledge => `
+                                                    <tr>
+                                                        <td>${new Date(pledge.date).toLocaleDateString()}</td>
+                                                        <td>${pledge.userName}</td>
+                                                        <td>$${pledge.amount}</td>
+                                                        <td>${pledge.message || ''}</td>
+                                                        <td>${pledge.confirmed ? '<span class="badge bg-success">Confirmed</span>' : '<span class="badge bg-warning">Pending</span>'}</td>
+                                                        <td>
+                                                            ${!pledge.confirmed ? `
+                                                                <button class="btn btn-sm btn-success" onclick="confirmPledgePayment(${projectId}, '${pledge.id}')">
+                                                                Confirm Payment
+                                                            </button>
+                                                            ` : ''}
+                                                        </td>
+                                                    </tr>
+                                                `).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="saveBudgetChanges(${projectId})">
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+  if (!document.getElementById(budgetModalId)) {
+    document.body.insertAdjacentHTML('beforeend', budgetModal);
+  } else {
+    document.getElementById(`budget-items-list-${projectId}`).innerHTML = project.budget.items.map(item => `
+                                                  <tr>
+                                                      <td>${new Date(item.date).toLocaleDateString()}</td>
+                                                      <td>${item.description}</td>
+                                                      <td>$${item.amount}</td>
+                                                      <td>
+                                                          <button class="btn btn-sm btn-danger" 
+                                                              onclick="removeBudgetItem('${projectId}', '${item.id}')">
+                                                              Remove
+                                                          </button>
+                                                      </td>
+                                                  </tr>
+                                              `).join('');
+    document.getElementById(`proposed-budget-${projectId}`).value = project.budget?.proposed || 0;
+    document.getElementById(`approved-budget-${projectId}`).value = project.budget?.approved || 0;
+  }
+  const modal = new bootstrap.Modal(document.getElementById(budgetModalId));
+  modal.show();
+}
+window.editBudget = editBudget;
+
+async function addBudgetItem(projectId) {
+  projectId = parseInt(projectId);
+  const description = document.getElementById(`item-description-${projectId}`).value;
+  const amount = parseFloat(document.getElementById(`item-amount-${projectId}`).value);
+  const date = document.getElementById(`item-date-${projectId}`).value;
+  if (!description || isNaN(amount) || !date) {
+    showMessageModal('Error', 'Please fill in all fields');
+    return;
+  }
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === projectId);
+  if (!project) {
+    console.error("Project not found:", projectId);
+    return;
+  }
+  if (!project.budget) {
+    project.budget = {
+      proposed: 0,
+      approved: 0,
+      items: []
+    };
+  }
+  if (!project.budget.items) {
+    project.budget.items = [];
+  }
+  project.budget.items.push({
+    id: Date.now().toString(),
+    description,
+    amount,
+    date: new Date(date).toISOString()
+  });
+  await db.setItem('projects', projects);
+  document.getElementById(`item-description-${projectId}`).value = '';
+  document.getElementById(`item-amount-${projectId}`).value = '';
+  document.getElementById(`item-date-${projectId}`).value = '';
+  const itemsList = document.getElementById(`budget-items-list-${projectId}`);
+  if (itemsList) {
+    itemsList.innerHTML = project.budget.items.map(item => `
+                                                  <tr>
+                                                      <td>${new Date(item.date).toLocaleDateString()}</td>
+                                                      <td>${item.description}</td>
+                                                      <td>$${item.amount}</td>
+                                                      <td>
+                                                          <button class="btn btn-sm btn-danger" 
+                                                              onclick="removeBudgetItem('${projectId}', '${item.id}')">
+                                                              Remove
+                                                          </button>
+                                                      </td>
+                                                  </tr>
+                                              `).join('');
+  }
+}
+window.addBudgetItem = addBudgetItem;
+
+async function removeBudgetItem(projectId, itemId) {
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === parseInt(projectId));
+  if (!project || !project.budget || !project.budget.items) return;
+  project.budget.items = project.budget.items.filter(item => item.id !== itemId);
+  await db.setItem('projects', projects);
+  const budgetItemsList = document.getElementById(`budget-items-list-${projectId}`);
+  if (budgetItemsList) {
+    budgetItemsList.innerHTML = project.budget.items.map(item => `
+                                            <tr>
+                                                <td>${new Date(item.date).toLocaleDateString()}</td>
+                                                <td>${item.description}</td>
+                                                <td>$${item.amount}</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-danger" 
+                                                        onclick="removeBudgetItem('${projectId}', '${item.id}')">
+                                                        Remove
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        `).join('');
+  }
+}
+window.removeBudgetItem = removeBudgetItem;
+
+async function saveBudgetChanges(projectId) {
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === parseInt(projectId));
+  if (!project) return;
+  if (!project.budget) {
+    project.budget = {};
+  }
+  project.budget.proposed = parseFloat(document.getElementById(`proposed-budget-${projectId}`).value) || 0;
+  project.budget.approved = parseFloat(document.getElementById(`approved-budget-${projectId}`).value) || 0;
+  await db.setItem('projects', projects);
+  const modalId = `budgetModal-${projectId}`;
+  const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+  modal.hide();
+  loadProjects();
+}
+window.saveBudgetChanges = saveBudgetChanges;
+
+async function manageStaffing(projectId) {
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === projectId);
+  if (!project) {
+    console.error("Project not found:", projectId);
+    return;
+  }
+  if (!project.staffing) {
+    project.staffing = {
+      required: [],
+      applications: [],
+      assigned: []
+    };
+  }
+  const staffingModalId = `staffingModal-${projectId}`;
+  const staffingModal = `
+                <div class="modal fade" id="${staffingModalId}" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Manage Staffing - ${project.name}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h6>Add Required Role</h6>
+                                <div class="row g-2 mb-4">
+                                    <div class="col-md-5">
+                                        <select class="form-select" id="new-role-type-${projectId}">
+                                            <option value="">Select Role</option>
+                                            <option value="Catering">Catering</option>
+                                            <option value="Cleaning">Cleaning</option>
+                                            <option value="Media">Media</option>
+                                            <option value="Promotions">Promotions</option>
+                                            <option value="Entertainment">Entertainment</option>
+                                            <option value="Decorations">Decorations</option>
+                                            <option value="Hospitality">Hospitality</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="number" class="form-control" id="new-role-count-${projectId}" placeholder="Number needed">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button class="btn btn-primary w-100" onclick="addRequiredRole('${projectId}')">Add Role</button>
+                                    </div>
+                                </div>
+
+                                <h6>Required Roles</h6>
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Role</th>
+                                                <th>Required</th>
+                                                <th>Filled</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="required-roles-list-${projectId}">
+                                            ${(project.staffing?.required || []).map(role => `
+                                                <tr>
+                                                    <td>${role.type}</td>
+                                                    <td>${role.count}</td>
+                                                    <td>${role.filled || 0}</td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-danger"
+                                                            onclick="removeRequiredRole('${projectId}', '${role.type}')">
+                                                            Remove
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="generateVacancyAnnouncements(${projectId})">
+                                    Generate Vacancy Announcements
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+  if (!document.getElementById(staffingModalId)) {
+    document.body.insertAdjacentHTML('beforeend', staffingModal);
+  } else {
+    refreshRequiredRolesList(projectId);
+  }
+  const modal = new bootstrap.Modal(document.getElementById(staffingModalId));
+  modal.show();
+}
+window.manageStaffing = manageStaffing;
+
+async function removeRequiredRole(projectId, roleType) {
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === parseInt(projectId));
+  if (!project || !project.staffing || !project.staffing.required) return;
+  project.staffing.required = project.staffing.required.filter(role => role.type !== roleType);
+  await db.setItem('projects', projects);
+  refreshRequiredRolesList(projectId);
+}
+window.removeRequiredRole = removeRequiredRole;
+
+async function addRequiredRole(projectId) {
+  projectId = parseInt(projectId);
+  const roleType = document.getElementById(`new-role-type-${projectId}`).value;
+  const count = parseInt(document.getElementById(`new-role-count-${projectId}`).value);
+
+  if (!roleType || isNaN(count) || count < 1) {
+    showMessageModal('Error', 'Please select a role and enter a valid number');
+    return;
+  }
+
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === projectId);
+
+  if (!project) return;
+
+  if (!project.staffing) {
+    project.staffing = {
+      required: [],
+      applications: [],
+      assigned: []
+    };
+  }
+
+  if (!project.staffing.required) {
+    project.staffing.required = [];
+  }
+
+  const existingRole = project.staffing.required.find(r => r.type === roleType);
+  if (existingRole) {
+    existingRole.count = count;
+  } else {
+    project.staffing.required.push({
+      type: roleType,
+      count: count,
+      filled: 0
+    });
+  }
+
+  await db.setItem('projects', projects);
+  refreshRequiredRolesList(projectId);
+  
+  if (document.getElementById('volunteer-portal').classList.contains('active')) {
+    loadAvailableProjects();
+  }
+}
+window.addRequiredRole = addRequiredRole;
+
+async function refreshRequiredRolesList(projectId) {
+  let projects = await db.getItem('projects', []);
+  const project = projects.find(p => p.id === parseInt(projectId));
+  const container = document.getElementById(`required-roles-list-${projectId}`);
+  
+  if (!container) return;
+
+  container.innerHTML = (project.staffing?.required || []).map(role => `
+    <tr>
+      <td>${role.type}</td>
+      <td>${role.count}</td>
+      <td>${role.filled || 0}</td>
+      <td>
+        <button class="btn btn-sm btn-danger"
+          onclick="removeRequiredRole('${projectId}', '${role.type}')">
+          Remove
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+window.refreshRequiredRolesList = refreshRequiredRolesList;
+
+async function loadTeamLeaders() {
+  const volunteers = await db.getItem('volunteers', []);
+  const container = document.getElementById('team-leaders-list');
+  if (!container) return;
+  const teamLeaders = volunteers.filter(v => v.isTeamLeader);
+  container.innerHTML = teamLeaders.map(leader => `
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">${leader.name}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Team Leader - ${leader.role}</h6>
+                        <button class="btn btn-sm btn-danger" 
+                            onclick="removeTeamLeader(${leader.id})">Remove as Leader</button>
+                    </div>
+                </div>
+            `).join('');
+}
+window.loadTeamLeaders = loadTeamLeaders;
+
+async function loadVolunteers() {
+  const volunteers = await db.getItem('volunteers', []);
+  const container = document.getElementById('volunteers-list');
+  if (!container || !volunteers) return;
+  container.innerHTML = volunteers.map(volunteer => `
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">${volunteer.name}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">${volunteer.role}</h6>
+                        <button class="btn btn-sm btn-primary" 
+                            onclick="assignTeamLeader(${volunteer.id})">Assign as Team Leader</button>
+                    </div>
+                </div>
+            `).join('');
+}
+window.loadVolunteers = loadVolunteers;
+
+function loadAdminPanel() {
+  loadInquiries();
+  loadMessages();
+  loadCalendar();
+  loadTeamLeaders();
+  loadProjects();
+  if (typeof loadVolunteers === 'function') {
+    loadVolunteers();
+  }
+}
+window.loadAdminPanel = loadAdminPanel;
+
+function deleteProject(projectId) {
+  const modalId = 'deleteProjectModal';
+  const modalHtml = `
+    <div class="modal fade" id="${modalId}" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">  
+            <h5 class="modal-title">Delete Project</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete this project? This action cannot be undone.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-danger" onclick="confirmDeleteProject(${projectId})">
+              Delete Project
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if (document.getElementById(modalId)) {
+    document.getElementById(modalId).remove();
+  }
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  const modal = new bootstrap.Modal(document.getElementById(modalId));
+  modal.show();
+}
+window.deleteProject = deleteProject;
+
+async function confirmDeleteProject(projectId) {
+  let projects = await db.getItem('projects', []);
+  projects = projects.filter(p => p.id !== projectId);
+  await db.setItem('projects', projects);
+  
+  const modal = bootstrap.Modal.getInstance(document.getElementById('deleteProjectModal'));
+  modal.hide();
+  
+  loadProjects();
+  showMessageModal('Success', 'Project has been deleted');
+}
+window.confirmDeleteProject = confirmDeleteProject;
+
+function toggleAdminSidebar() {
+  const sidebar = document.querySelector('.admin-sidebar');
+  const content = document.querySelector('.admin-content');
+  const toggle = document.querySelector('.sidebar-toggle');
+  
+  sidebar.classList.toggle('collapsed');
+  content.classList.toggle('expanded');
+  toggle.classList.toggle('collapsed');
+  
+  const icon = toggle.querySelector('i');
+  if (sidebar.classList.contains('collapsed')) {
+    icon.classList.replace('bi-chevron-left', 'bi-chevron-right');
+  } else {
+    icon.classList.replace('bi-chevron-right', 'bi-chevron-left');
+  }
+}
+window.toggleAdminSidebar = toggleAdminSidebar;
+
+function showAdminSection(sectionId) {
+  // Hide all sections
+  document.querySelectorAll('.admin-section').forEach(section => {
+    section.classList.add('d-none');
+  });
+  
+  // Show selected section
+  document.getElementById(`admin-${sectionId}`).classList.remove('d-none');
+  
+  // Update active state in sidebar
+  document.querySelectorAll('.sidebar-link').forEach(link => {
+    link.classList.remove('active');
+  });
+  document.querySelector(`.sidebar-link[data-section="${sectionId}"]`).classList.add('active');
+}
+window.showAdminSection = showAdminSection;
+
+document.querySelector('.sidebar-toggle').addEventListener('click', toggleAdminSidebar);
+
+document.querySelectorAll('.sidebar-link').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    showAdminSection(e.target.dataset.section);
+  });
+});
+
+loadAdminPanel();
+showAdminSection('inquiries');
+document.querySelector('.sidebar-link[data-section="inquiries"]').classList.add('active');
+
+async function sendNotification() {
+  const selectedRole = document.getElementById('volunteer-filter').value;
+  const volunteers = await db.getItem('volunteers', []);
+  
+  let targetVolunteers;
+  if (selectedRole === 'all') {
+    targetVolunteers = volunteers;
+  } else {
+    targetVolunteers = volunteers.filter(v => v.role === selectedRole);
+  }
+
+  const modalId = 'sendNotificationModal';
+  const modalHtml = `
+    <div class="modal fade" id="${modalId}" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Send Notification</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <p>Sending to: ${selectedRole === 'all' ? 'All Volunteers' : selectedRole + ' Team'}</p>
+            <p>Recipients: ${targetVolunteers.length}</p>
+            <div class="mb-3">
+              <label class="form-label">Message</label>
+              <textarea class="form-control" id="notification-message" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="sendNotificationMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if (document.getElementById(modalId)) {
+    document.getElementById(modalId).remove();
+  }
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  const modal = new bootstrap.Modal(document.getElementById(modalId));
+  modal.show();
+}
+window.sendNotification = sendNotification;
+
+async function sendNotificationMessage() {
+  const message = document.getElementById('notification-message').value;
+  if (!message) {
+    showMessageModal('Error', 'Please enter a message');
+    return;
+  }
+
+  const selectedRole = document.getElementById('volunteer-filter').value;
+  const volunteers = await db.getItem('volunteers', []);
+  
+  let targetVolunteers;
+  if (selectedRole === 'all') {
+    targetVolunteers = volunteers;
+  } else {
+    targetVolunteers = volunteers.filter(v => v.role === selectedRole);
+  }
+
+  // Add notification to each volunteer's notifications
+  targetVolunteers.forEach(volunteer => {
+    if (!volunteer.notifications) {
+      volunteer.notifications = [];
+    }
+    volunteer.notifications.push({
+      message,
+      date: new Date().toISOString(),
+      read: false
+    });
+  });
+
+  await db.setItem('volunteers', volunteers);
+  
+  const modal = bootstrap.Modal.getInstance(document.getElementById('sendNotificationModal'));
+  modal.hide();
+  
+  showMessageModal('Success', `Notification sent to ${targetVolunteers.length} volunteers`);
+}
+window.sendNotificationMessage = sendNotificationMessage;
+
+function showToast(message, type = 'info') {
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        toastContainer.style.position = 'fixed';
+        toastContainer.style.bottom = '1rem';
+        toastContainer.style.right = '1rem';
+        toastContainer.style.zIndex = '1056'; // Above modals
+        document.body.appendChild(toastContainer);
+    }
+
+    const toastId = `toast-${Date.now()}`;
+    const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center text-bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, { delay: 5000, autohide: true });
+    toast.show();
+    toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+    });
+}
+window.showToast = showToast;
+
+function joinMeeting() {
+    showMessageModal('Video Feature', 'Video meeting functionality is under development.');
+}
+window.joinMeeting = joinMeeting;
+
+function leaveMeeting() {
+    showMessageModal('Video Feature', 'Video meeting functionality is under development.');
+}
+window.leaveMeeting = leaveMeeting;
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
