@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Input and Button Variables ---
+    // --- Element Variables ---
     const scriptUrlInput = document.getElementById('script-url');
     const saveUrlButton = document.getElementById('save-url');
     const managerContent = document.getElementById('manager-content');
@@ -52,17 +52,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.status !== 'success') throw new Error(result.message);
 
             projectsTableBody.innerHTML = '';
-            if (result.projects.length === 0) {
-                projectsTableBody.innerHTML = '<tr><td colspan="3">No projects found. Add one above!</td></tr>';
+            if (!result.projects || result.projects.length === 0) {
+                projectsTableBody.innerHTML = '<tr><td colspan="4">No projects found. Add one above!</td></tr>';
             } else {
+                // The Apps Script must return the password field for this to work
                 result.projects.forEach(project => {
                     const row = document.createElement('tr');
-                    // We check if a password is set to show an indicator
                     const hasPassword = project.password ? 'Yes' : 'No';
                     row.innerHTML = `
                         <td>${project.projectId}</td>
                         <td>${project.cellLocation}</td>
-                        <td>Password Set: <strong>${hasPassword}</strong></td>
+                        <td><strong>${hasPassword}</strong></td>
                         <td><button class="delete" data-project-id="${project.projectId}">Delete</button></td>
                     `;
                     projectsTableBody.appendChild(row);
@@ -105,48 +105,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- THIS IS THE CORRECTED DELETE LOGIC ---
-    // This function shows the modal and sets up the confirm/cancel actions.
     const showDeleteModal = (projectId) => {
         modalProjectId.textContent = projectId;
         modalPasswordInput.value = '';
         passwordModal.style.display = 'block';
         modalPasswordInput.focus();
 
-        // When the user clicks "Confirm Delete" inside the modal
         modalConfirmBtn.onclick = async () => {
             const password = modalPasswordInput.value;
-            // The password can be an empty string if none was set, so we don't check for !password
-            
-            passwordModal.style.display = 'none'; // Hide modal immediately
-            
+            passwordModal.style.display = 'none';
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=deleteProject`, {
                     method: 'POST',
                     body: JSON.stringify({ projectId, password }),
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' }
                 });
-
                 const result = await response.json();
                 if (result.status !== 'success') throw new Error(result.message);
-
                 showToast(result.message, 'success');
-                fetchProjects(); // Refresh list on success
+                fetchProjects();
             } catch (error) {
                 showToast(`Error deleting project: ${error.message}`, 'error');
             }
         };
 
-        // When the user clicks "Cancel"
         modalCancelBtn.onclick = () => {
             passwordModal.style.display = 'none';
         };
     };
 
-
-    // --- EVENT LISTENERS ---
-
-    // Save the Script URL
+    // --- Primary Event Listeners ---
     saveUrlButton.addEventListener('click', () => {
         const url = scriptUrlInput.value.trim();
         if (url) {
@@ -160,24 +148,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Handle form submission for adding a project
     addProjectForm.addEventListener('submit', handleAddProject);
-
-    // Handle refresh button click
     refreshButton.addEventListener('click', fetchProjects);
 
-    // Main event listener for the table. It now calls the modal function.
+    // This is the CRUCIAL listener. It listens for clicks on the whole table body.
     projectsTableBody.addEventListener('click', (e) => {
+        // It checks if the clicked element is a button with the class 'delete'
         if (e.target && e.target.matches('button.delete')) {
             const projectId = e.target.dataset.projectId;
-            showDeleteModal(projectId);
+            showDeleteModal(projectId); // It calls the function to show the modal.
         }
     });
 
-    // Load projects if URL is already saved in local storage
+    // Load projects if URL is already saved
     if (SCRIPT_URL) {
         scriptUrlInput.value = SCRIPT_URL;
         managerContent.style.display = 'block';
         fetchProjects();
     }
 });
+```### Step 3: The Definitive Apps Script
+Just in case, ensure your Apps Script `handleGetProjects` function is also returning the password.
+
+```javascript
+/**
+ * Handles request to get all projects from the index.
+ * UPDATED to also send back whether a password is set.
+ */
+function handleGetProjects() {
+  const indexSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(INDEX_SHEET_NAME);
+  const data = indexSheet.getDataRange().getValues();
+  data.shift(); // Remove header row
+  const projects = data.map(row => ({ 
+    projectId: row[0], 
+    cellLocation: row[1],
+    password: row[2] ? true : false // Send true/false for password existence
+  }));
+  
+  return ContentService
+    .createTextOutput(JSON.stringify({ status: 'success', projects: projects }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
