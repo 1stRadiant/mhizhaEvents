@@ -1,5 +1,5 @@
 // IMPORTANT: Replace this URL with your NEW Google Apps Script Web App URL.
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwd83dxYJvSLra3t3fAd13Crpc1vByNIxS3YaN32gnTTGilMr2jq3WfIUxf42LWl-hU/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJHUvbYQVhP9yDVr8At4Vu8SkoT8Z9i6LtXdPyAFpdfUAHBfNBOItGXOOBE6rkcV17/exec";
 
 class Database {
     constructor(projectId) {
