@@ -772,7 +772,14 @@
     </div>
 
 <script type="module">
-import { db } from './database.js';
+// Import the Database CLASS instead of the db object
+import { Database } from './database.js';
+
+// Define a unique ID for this project's database.
+const PROJECT_ID = 'Mhizha-Events';
+
+// Create a new database instance with that ID.
+const db = new Database(PROJECT_ID);
 
 window.db = db; // Make db globally accessible for simplicity
 
