@@ -4,6 +4,7 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwd83dxYJvSLra3t3fAd
 class Database {
     constructor(projectId) {
         if (!projectId) {
+            // This error is now more important than ever!
             throw new Error("A projectId is required to initialize the database.");
         }
         this.projectId = projectId;
@@ -41,15 +42,14 @@ class Database {
                     console.error("Failed to fetch data from Google Sheets:", error);
                     alert(`Error: Could not connect to the database for project "${this.projectId}". Please check your setup. Some features may not work.`);
                     // Fallback to a minimal structure
-                    this.data = { announcements: [], gallery: [], inquiries: [], volunteers: [], messages: [], events: [], projects: [], adminCredentials: {username:'admin', password:'admin123'} }; 
+                    this.data = { announcements: [], gallery: [], inquiries: [], volunteers: [], messages: [], events: [], projects: [], adminCredentials: {username:'admin', password:'admin123'} };
                     this.isFetching = false;
                 });
             return this.fetchPromise;
         }
         return Promise.resolve(this.data);
     }
-    
-    // getItem remains the same
+
     async getItem(key, defaultValue = null) {
         await this.init();
         if (!this.data) {
@@ -63,7 +63,6 @@ class Database {
         }
     }
 
-    // setItem remains the same
     async setItem(key, value) {
         await this.init();
         if (!this.data) return;
@@ -83,7 +82,7 @@ class Database {
             const dataToSave = JSON.parse(JSON.stringify(this.data));
             delete dataToSave.isAdminLoggedIn;
             delete dataToSave.currentVolunteer;
-            
+
             try {
                 // Append projectId to the POST request URL
                 const response = await fetch(`${SCRIPT_URL}?projectId=${this.projectId}&action=saveData`, {
@@ -124,11 +123,6 @@ class Database {
     }
 }
 
-// HOW TO USE:
-// You no longer export a single instance. Instead, you export the class.
-// In your project's main script, you create an instance like this:
-// import { Database } from './database.js';
-// const db = new Database('my-unique-project-id');
-// window.db = db; // Make it global if other scripts need it
-
+// ✅ Correct: The Database CLASS is exported.
+// This allows other files to use `import { Database } from './database.js';`
 export { Database };
