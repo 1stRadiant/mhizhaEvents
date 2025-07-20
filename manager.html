@@ -41,9 +41,10 @@
     <div id="manager-content" style="display: none;">
         <h2>Add New Project Database</h2>
         <form id="add-project-form">
-            <input type="text" id="new-project-id" placeholder="Enter New Project ID (e.g., 'my-new-app')" required>
-            <button type="submit">Add Project <div class="loader" id="add-loader"></div></button>
-        </form>
+    <input type="text" id="new-project-id" placeholder="Enter New Project ID (e.g., 'my-new-app')" required>
+    <input type="password" id="new-project-password" placeholder="Set Deletion Password (Optional)">
+    <button type="submit">Add Project <div class="loader" id="add-loader"></div></button>
+</form>
 
         <h2>Existing Projects</h2>
         <button id="refresh-btn">Refresh List <div class="loader" id="refresh-loader"></div></button>
