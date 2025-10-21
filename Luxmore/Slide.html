@@ -35,9 +35,7 @@
         }
 
         .slide.active {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: block;
         }
 
         .slide img {
@@ -156,7 +154,7 @@
             height: 4px;
             background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
             width: 0%;
-            transition: width 0.05s linear;
+            transition: width 0.1s linear;
             z-index: 101;
         }
 
@@ -201,77 +199,166 @@
     </div>
 
     <script>
+        // Image list
         const baseUrl = 'https://mhizhaevents.co.uk/Luxmore/new/';
-        const regularSlideDuration = 4000; // 4 seconds
-        
-        const originalImages = [
-            'IMG-20230329-WA0040.jpg', 'IMG-20250815-WA0006.jpg', 'IMG-20250817-WA0046.jpg', 'IMG-20250817-WA0053.jpg', 
-            'IMG-20251021-WA0000.jpg', 'IMG-20251021-WA0001.jpg', 'IMG-20251021-WA0002.jpg', 'IMG-20251021-WA0003.jpg', 
-            'IMG-20251021-WA0004.jpg', 'IMG-20251021-WA0005.jpg', 'IMG-20251021-WA0006.jpg', 'IMG-20251021-WA0007.jpg', 
-            'IMG-20251021-WA0008.jpg', 'IMG-20251021-WA0009.jpg', 'IMG-20251021-WA0010.jpg', 'IMG-20251021-WA0011.jpg', 
-            'IMG-20251021-WA0012.jpg', 'IMG-20251021-WA0013.jpg', 'IMG-20251021-WA0014.jpg', 'IMG-20251021-WA0015.jpg', 
-            'IMG-20251021-WA0016.jpg', 'IMG-20251021-WA0017.jpg', 'IMG-20251021-WA0018.jpg', 'IMG-20251021-WA0019.jpg', 
-            'IMG-20251021-WA0020.jpg', 'IMG-20251021-WA0022.jpg', 'IMG-20251021-WA0023.jpg', 'IMG-20251021-WA0025.jpg', 
-            'IMG-20251021-WA0026.jpg', 'IMG-20251021-WA0028.jpg', 'IMG-20251021-WA0030.jpg', 'IMG-20251021-WA0032.jpg', 
-            'IMG-20251021-WA0033.jpg', 'IMG-20251021-WA0034.jpg', 'IMG-20251021-WA0035.jpg', 'IMG-20251021-WA0036.jpg', 
-            'IMG-20251021-WA0037.jpg', 'IMG-20251021-WA0039.jpg', 'IMG-20251021-WA0040.jpg', 'IMG-20251021-WA0045.jpg', 
-            'IMG-20251021-WA0046.jpg', 'IMG-20251021-WA0048.jpg', 'IMG-20251021-WA0051.jpg', 'IMG-20251021-WA0053.jpg', 
-            'IMG-20251021-WA0055.jpg', 'IMG-20251021-WA0056.jpg', 'IMG-20251021-WA0059.jpg', 'IMG-20251021-WA0060.jpg', 
-            'IMG-20251021-WA0068.jpg', 'IMG-20251021-WA0069.jpg', 'IMG-20251021-WA0071.jpg', 'IMG-20251021-WA0072.jpg', 
-            'IMG-20251021-WA0073.jpg', 'IMG-20251021-WA0074.jpg', 'IMG-20251021-WA0076.jpg', 'IMG-20251021-WA0077.jpg', 
-            'IMG-20251021-WA0078.jpg', 'IMG-20251021-WA0079.jpg', 'IMG-20251021-WA0082.jpg', 'IMG-20251021-WA0084.jpg', 
-            'IMG-20251021-WA0086.jpg', 'IMG-20251021-WA0087.jpg', 'IMG-20251021-WA0088.jpg', 'IMG-20251021-WA0089.jpg', 
-            'IMG-20251021-WA0090.jpg', 'IMG-20251021-WA0091.jpg', 'IMG-20251021-WA0092.jpg', 'IMG-20251021-WA0094.jpg', 
-            'IMG-20251021-WA0095.jpg', 'IMG-20251021-WA0096.jpg', 'IMG-20251021-WA0097.jpg', 'IMG-20251021-WA0098.jpg', 
-            'IMG-20251021-WA0100.jpg', 'IMG-20251021-WA0101.jpg', 'IMG-20251021-WA0102.jpg', 'IMG-20251021-WA0103.jpg', 
-            'IMG-20251021-WA0104.jpg', 'IMG-20251021-WA0105.jpg', 'IMG-20251021-WA0106.jpg', 'IMG-20251021-WA0107.jpg', 
-            'IMG-20251021-WA0108.jpg', 'IMG-20251021-WA0109.jpg', 'IMG-20251021-WA0110.jpg', 'IMG-20251021-WA0111.jpg', 
-            'IMG-20251021-WA0112.jpg', 'IMG-20251021-WA0113.jpg', 'IMG-20251021-WA0114.jpg', 'IMG-20251021-WA0115.jpg', 
-            'IMG-20251021-WA0116.jpg', 'IMG-20251021-WA0117.jpg', 'IMG-20251021-WA0118.jpg', 'IMG-20251021-WA0119.jpg', 
-            'IMG-20251021-WA0120.jpg', 'IMG-20251021-WA0121.jpg', 'IMG-20251021-WA0123.jpg', 'IMG-20251021-WA0124.jpg', 
-            'IMG-20251021-WA0125.jpg', 'IMG-20251021-WA0126.jpg', 'IMG-20251021-WA0127.jpg', 'IMG-20251021-WA0128.jpg', 
-            'IMG-20251021-WA0129.jpg', 'IMG-20251021-WA0130.jpg', 'IMG-20251021-WA0131.jpg', 'IMG-20251021-WA0132.jpg', 
-            'IMG-20251021-WA0133.jpg', 'IMG-20251021-WA0134.jpg', 'IMG-20251021-WA0135.jpg', 'IMG-20251021-WA0136.jpg', 
-            'IMG-20251021-WA0137.jpg', 'IMG-20251021-WA0139.jpg', 'IMG-20251021-WA0140.jpg', 'IMG-20251021-WA0141.jpg', 
-            'IMG-20251021-WA0142.jpg', 'IMG-20251021-WA0144.jpg', 'IMG-20251021-WA0145.jpg', 'IMG-20251021-WA0146.jpg', 
-            'IMG-20251021-WA0147.jpg', 'IMG-20251021-WA0148.jpg', 'IMG-20251021-WA0149.jpg', 'IMG-20251021-WA0150.jpg', 
-            'IMG-20251021-WA0151.jpg', 'IMG-20251021-WA0152.jpg', 'IMG-20251021-WA0153.jpg', 'IMG-20251021-WA0154.jpg', 
-            'IMG-20251021-WA0155.jpg', 'IMG-20251021-WA0156.jpg', 'IMG-20251021-WA0157.jpg', 'IMG-20251021-WA0158.jpg', 
-            'IMG-20251021-WA0159.jpg', 'IMG-20251021-WA0160.jpg', 'IMG-20251021-WA0161.jpg', 'IMG-20251021-WA0162.jpg', 
-            'IMG-20251021-WA0175.jpg', 'IMG-20251021-WA0176.jpg', 'IMG-20251021-WA0177.jpg', 'IMG-20251021-WA0178.jpg', 
-            'IMG-20251021-WA0180.jpg', 'IMG-20251021-WA0181.jpg', 'IMG-20251021-WA0185.jpg', 'IMG-20251021-WA0187.jpg', 
-            'IMG-20251021-WA0188.jpg', 'IMG-20251021-WA0190.jpg', 'IMG-20251021-WA0191.jpg', 'IMG-20251021-WA0192.jpg', 
+        const images = [
+            'IMG-20230329-WA0040.jpg',
+            'IMG-20250815-WA0006.jpg',
+            'IMG-20250817-WA0046.jpg',
+            'IMG-20250817-WA0053.jpg',
+            'IMG-20251021-WA0000.jpg',
+            'IMG-20251021-WA0001.jpg',
+            'IMG-20251021-WA0002.jpg',
+            'IMG-20251021-WA0003.jpg',
+            'IMG-20251021-WA0004.jpg',
+            'IMG-20251021-WA0005.jpg',
+            'IMG-20251021-WA0006.jpg',
+            'IMG-20251021-WA0007.jpg',
+            'IMG-20251021-WA0008.jpg',
+            'IMG-20251021-WA0009.jpg',
+            'IMG-20251021-WA0010.jpg',
+            'IMG-20251021-WA0011.jpg',
+            'IMG-20251021-WA0012.jpg',
+            'IMG-20251021-WA0013.jpg',
+            'IMG-20251021-WA0014.jpg',
+            'IMG-20251021-WA0015.jpg',
+            'IMG-20251021-WA0016.jpg',
+            'IMG-20251021-WA0017.jpg',
+            'IMG-20251021-WA0018.jpg',
+            'IMG-20251021-WA0019.jpg',
+            'IMG-20251021-WA0020.jpg',
+            'IMG-20251021-WA0022.jpg',
+            'IMG-20251021-WA0023.jpg',
+            'IMG-20251021-WA0025.jpg',
+            'IMG-20251021-WA0026.jpg',
+            'IMG-20251021-WA0028.jpg',
+            'IMG-20251021-WA0030.jpg',
+            'IMG-20251021-WA0032.jpg',
+            'IMG-20251021-WA0033.jpg',
+            'IMG-20251021-WA0034.jpg',
+            'IMG-20251021-WA0035.jpg',
+            'IMG-20251021-WA0036.jpg',
+            'IMG-20251021-WA0037.jpg',
+            'IMG-20251021-WA0039.jpg',
+            'IMG-20251021-WA0040.jpg',
+            'IMG-20251021-WA0045.jpg',
+            'IMG-20251021-WA0046.jpg',
+            'IMG-20251021-WA0048.jpg',
+            'IMG-20251021-WA0051.jpg',
+            'IMG-20251021-WA0053.jpg',
+            'IMG-20251021-WA0055.jpg',
+            'IMG-20251021-WA0056.jpg',
+            'IMG-20251021-WA0059.jpg',
+            'IMG-20251021-WA0060.jpg',
+            'IMG-20251021-WA0068.jpg',
+            'IMG-20251021-WA0069.jpg',
+            'IMG-20251021-WA0071.jpg',
+            'IMG-20251021-WA0072.jpg',
+            'IMG-20251021-WA0073.jpg',
+            'IMG-20251021-WA0074.jpg',
+            'IMG-20251021-WA0076.jpg',
+            'IMG-20251021-WA0077.jpg',
+            'IMG-20251021-WA0078.jpg',
+            'IMG-20251021-WA0079.jpg',
+            'IMG-20251021-WA0082.jpg',
+            'IMG-20251021-WA0084.jpg',
+            'IMG-20251021-WA0086.jpg',
+            'IMG-20251021-WA0087.jpg',
+            'IMG-20251021-WA0088.jpg',
+            'IMG-20251021-WA0089.jpg',
+            'IMG-20251021-WA0090.jpg',
+            'IMG-20251021-WA0091.jpg',
+            'IMG-20251021-WA0092.jpg',
+            'IMG-20251021-WA0094.jpg',
+            'IMG-20251021-WA0095.jpg',
+            'IMG-20251021-WA0096.jpg',
+            'IMG-20251021-WA0097.jpg',
+            'IMG-20251021-WA0098.jpg',
+            'IMG-20251021-WA0100.jpg',
+            'IMG-20251021-WA0101.jpg',
+            'IMG-20251021-WA0102.jpg',
+            'IMG-20251021-WA0103.jpg',
+            'IMG-20251021-WA0104.jpg',
+            'IMG-20251021-WA0105.jpg',
+            'IMG-20251021-WA0106.jpg',
+            'IMG-20251021-WA0107.jpg',
+            'IMG-20251021-WA0108.jpg',
+            'IMG-20251021-WA0109.jpg',
+            'IMG-20251021-WA0110.jpg',
+            'IMG-20251021-WA0111.jpg',
+            'IMG-20251021-WA0112.jpg',
+            'IMG-20251021-WA0113.jpg',
+            'IMG-20251021-WA0114.jpg',
+            'IMG-20251021-WA0115.jpg',
+            'IMG-20251021-WA0116.jpg',
+            'IMG-20251021-WA0117.jpg',
+            'IMG-20251021-WA0118.jpg',
+            'IMG-20251021-WA0119.jpg',
+            'IMG-20251021-WA0120.jpg',
+            'IMG-20251021-WA0121.jpg',
+            'IMG-20251021-WA0123.jpg',
+            'IMG-20251021-WA0124.jpg',
+            'IMG-20251021-WA0125.jpg',
+            'IMG-20251021-WA0126.jpg',
+            'IMG-20251021-WA0127.jpg',
+            'IMG-20251021-WA0128.jpg',
+            'IMG-20251021-WA0129.jpg',
+            'IMG-20251021-WA0130.jpg',
+            'IMG-20251021-WA0131.jpg',
+            'IMG-20251021-WA0132.jpg',
+            'IMG-20251021-WA0133.jpg',
+            'IMG-20251021-WA0134.jpg',
+            'IMG-20251021-WA0135.jpg',
+            'IMG-20251021-WA0136.jpg',
+            'IMG-20251021-WA0137.jpg',
+            'IMG-20251021-WA0139.jpg',
+            'IMG-20251021-WA0140.jpg',
+            'IMG-20251021-WA0141.jpg',
+            'IMG-20251021-WA0142.jpg',
+            'IMG-20251021-WA0144.jpg',
+            'IMG-20251021-WA0145.jpg',
+            'IMG-20251021-WA0146.jpg',
+            'IMG-20251021-WA0147.jpg',
+            'IMG-20251021-WA0148.jpg',
+            'IMG-20251021-WA0149.jpg',
+            'IMG-20251021-WA0150.jpg',
+            'IMG-20251021-WA0151.jpg',
+            'IMG-20251021-WA0152.jpg',
+            'IMG-20251021-WA0153.jpg',
+            'IMG-20251021-WA0154.jpg',
+            'IMG-20251021-WA0155.jpg',
+            'IMG-20251021-WA0156.jpg',
+            'IMG-20251021-WA0157.jpg',
+            'IMG-20251021-WA0158.jpg',
+            'IMG-20251021-WA0159.jpg',
+            'IMG-20251021-WA0160.jpg',
+            'IMG-20251021-WA0161.jpg',
+            'IMG-20251021-WA0162.jpg',
+            'IMG-20251021-WA0175.jpg',
+            'IMG-20251021-WA0176.jpg',
+            'IMG-20251021-WA0177.jpg',
+            'IMG-20251021-WA0178.jpg',
+            'IMG-20251021-WA0180.jpg',
+            'IMG-20251021-WA0181.jpg',
+            'IMG-20251021-WA0185.jpg',
+            'IMG-20251021-WA0187.jpg',
+            'IMG-20251021-WA0188.jpg',
+            'IMG-20251021-WA0190.jpg',
+            'IMG-20251021-WA0191.jpg',
+            'IMG-20251021-WA0192.jpg',
             'IMG-20251021-WA0194.jpg'
         ];
 
-        // Define all slides with their properties
-        const slidesData = [
-            // 1. The memorial message image (10 seconds)
-            // IMPORTANT: Upload your memorial image as 'memorial-message.jpg' to the server.
-            { src: 'memorial-message.jpg', duration: 10000 },
-            
-            // 2. The specific image requested to be second (4 seconds)
-            { src: 'IMG-20251018-WA0001.jpg', duration: regularSlideDuration },
-            
-            // 3. The rest of the images (4 seconds each)
-            ...originalImages.map(imgSrc => ({ src: imgSrc, duration: regularSlideDuration }))
-        ];
-
+        // Generate slides dynamically
         const container = document.querySelector('.slideshow-container');
         const loading = document.getElementById('loading');
         
-        // Generate slides dynamically from slidesData
-        slidesData.forEach((slideData, index) => {
+        images.forEach((img, index) => {
             const slide = document.createElement('div');
             slide.className = 'slide' + (index === 0 ? ' active' : '');
             const imgElement = document.createElement('img');
-            imgElement.src = baseUrl + slideData.src;
-            imgElement.alt = `Slide ${index + 1}`;
-            // Hide loading message once the first image is ready to be displayed
-            if (index === 0) {
-                imgElement.onload = () => { loading.style.display = 'none'; };
-                imgElement.onerror = () => { loading.textContent = 'Error: Could not load the first slide.'; };
-            }
+            imgElement.src = baseUrl + img;
+            imgElement.alt = `Image ${index + 1}`;
             slide.appendChild(imgElement);
             container.appendChild(slide);
         });
@@ -283,21 +370,31 @@
         const progressBar = document.getElementById('progressBar');
         
         let isPlaying = true;
-        let autoPlayTimeout;
+        let autoPlayInterval;
         let progressInterval;
+        const slideDelay = 4000;
         let progress = 0;
 
+        // Hide loading message once first image loads
+        slides[0].querySelector('img').onload = function() {
+            loading.style.display = 'none';
+        };
+
         function showSlide(n) {
-            currentSlide = (n + totalSlides) % totalSlides; // Loop around
+            if (n >= totalSlides) {
+                currentSlide = 0;
+            } else if (n < 0) {
+                currentSlide = totalSlides - 1;
+            } else {
+                currentSlide = n;
+            }
+
             slides.forEach(slide => slide.classList.remove('active'));
             slides[currentSlide].classList.add('active');
+
             updateCounter();
             updateDots();
             resetProgress();
-            if (isPlaying) {
-                clearTimeout(autoPlayTimeout);
-                playNext();
-            }
         }
 
         function changeSlide(direction) {
@@ -315,57 +412,53 @@
         function createDots() {
             const dotsContainer = document.getElementById('dots');
             dotsContainer.innerHTML = '';
+            
             for (let i = 0; i < totalSlides; i++) {
                 const dot = document.createElement('span');
                 dot.className = 'dot';
+                if (i === 0) dot.classList.add('active');
                 dot.onclick = () => goToSlide(i);
                 dotsContainer.appendChild(dot);
             }
-            updateDots();
         }
 
         function updateDots() {
-            document.querySelectorAll('.dot').forEach((dot, index) => {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
                 dot.classList.toggle('active', index === currentSlide);
             });
         }
 
-        function playNext() {
-            const currentDelay = slidesData[currentSlide].duration;
-            autoPlayTimeout = setTimeout(() => changeSlide(1), currentDelay);
-        }
-
         function startAutoPlay() {
-            if (isPlaying) return;
             isPlaying = true;
             playPauseBtn.innerHTML = '⏸ Pause';
-            resetProgress();
-            playNext();
+            autoPlayInterval = setInterval(() => {
+                changeSlide(1);
+            }, slideDelay);
+            startProgress();
         }
 
         function stopAutoPlay() {
-            if (!isPlaying) return;
             isPlaying = false;
             playPauseBtn.innerHTML = '▶ Play';
-            clearTimeout(autoPlayTimeout);
+            clearInterval(autoPlayInterval);
             stopProgress();
         }
 
         function togglePlayPause() {
-            isPlaying ? stopAutoPlay() : startAutoPlay();
+            if (isPlaying) {
+                stopAutoPlay();
+            } else {
+                startAutoPlay();
+            }
         }
 
         function startProgress() {
-            stopProgress();
             progress = 0;
-            progressBar.style.width = '0%';
-            const currentDuration = slidesData[currentSlide].duration;
-            const intervalTime = 50;
-            const increment = 100 / (currentDuration / intervalTime);
             progressInterval = setInterval(() => {
-                progress += increment;
-                progressBar.style.width = `${Math.min(progress, 100)}%`;
-            }, intervalTime);
+                progress += 0.5;
+                progressBar.style.width = (progress / slideDelay * 100) + '%';
+            }, 10);
         }
 
         function stopProgress() {
@@ -374,44 +467,68 @@
 
         function resetProgress() {
             stopProgress();
+            progress = 0;
+            progressBar.style.width = '0%';
             if (isPlaying) {
                 startProgress();
-            } else {
-                progressBar.style.width = '0%';
             }
         }
 
+        // Keyboard navigation
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') changeSlide(-1);
-            if (e.key === 'ArrowRight') changeSlide(1);
-            if (e.key === ' ') { e.preventDefault(); togglePlayPause(); }
+            if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+            if (e.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+            if (e.key === ' ') {
+                e.preventDefault();
+                togglePlayPause();
+            }
         });
 
+        // Initialize
+        createDots();
+        updateCounter();
+        startAutoPlay();
+
+        // Fullscreen functionality
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => console.log(err));
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('Error attempting to enable fullscreen:', err);
+                });
             } else {
                 document.exitFullscreen();
             }
         }
 
+        // Update button text based on fullscreen state
         document.addEventListener('fullscreenchange', () => {
-            document.getElementById('fullscreenBtn').innerHTML = document.fullscreenElement ? '⛶ Exit Fullscreen' : '⛶ Fullscreen';
-        });
-        
-        window.addEventListener('load', () => {
-            if (window.location.hash === '#fullscreen') setTimeout(toggleFullscreen, 100);
-        });
-        
-        window.addEventListener('hashchange', () => {
-            if (window.location.hash === '#fullscreen' && !document.fullscreenElement) toggleFullscreen();
+            const btn = document.getElementById('fullscreenBtn');
+            if (document.fullscreenElement) {
+                btn.innerHTML = '⛶ Exit Fullscreen';
+            } else {
+                btn.innerHTML = '⛶ Fullscreen';
+            }
         });
 
-        // Initialize Slideshow
-        createDots();
-        updateCounter();
-        resetProgress();
-        playNext();
+        // Check URL hash for fullscreen on load
+        window.addEventListener('load', () => {
+            if (window.location.hash === '#fullscreen') {
+                setTimeout(() => {
+                    toggleFullscreen();
+                }, 100);
+            }
+        });
+
+        // Check hash changes
+        window.addEventListener('hashchange', () => {
+            if (window.location.hash === '#fullscreen' && !document.fullscreenElement) {
+                toggleFullscreen();
+            }
+        });
     </script>
 </body>
 </html>
