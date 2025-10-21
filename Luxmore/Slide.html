@@ -58,7 +58,7 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            display: flex; /* Changed from none to flex to be visible */
+            display: none;
             gap: 20px;
             align-items: center;
             background: rgba(0, 0, 0, 0.7);
@@ -108,7 +108,7 @@
             bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
-            display: flex; /* Changed from none to flex to be visible */
+            display: none;
             gap: 8px;
             flex-wrap: wrap;
             max-width: 90%;
@@ -154,7 +154,7 @@
             height: 4px;
             background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
             width: 0%;
-            transition: width 0.05s linear;
+            transition: width 0.1s linear;
             z-index: 101;
         }
 
@@ -200,10 +200,8 @@
 
     <script>
         // Image list
-        const memorialImage = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QBmRXhpZgAATU0AKgAAAAgABgESAAMAAAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAAExAAIAAAARAAAAZodpAAQAAAABAAAAfAAAAAAAAABgAAAAAQAAAGAAAAABcGFpbnQubmV0IDUuMC4xMwAA/9sAQwABAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB/9sAQwEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB/8IAEQgACQAJCAMBEgACEQEDEQH/xAAZAAEBAQEBAQAAAAAAAAAAAAADAgEABQT/xAAZAQEBAQEBAQAAAAAAAAAAAAABAgMEBQD/2gAMAwEAAhADEAAAAfVAAiXp9GgP/8QAHBAAAQQDAQAAAAAAAAAAAAAABAACAxQBExQV/9oACAEBAAEFAvHtbVNc5wcz8XnJ4v//EABwRAAEDBQAAAAAAAAAAAAAAAAABAgMEBRITMf/aAAgBAwEBPwHk5TghjNlP/8QAGhEAAgMBAQAAAAAAAAAAAAAAAAECAxASIf/aAAgBAgEBPwFNsSypGhf/xAAhEAABAwMFAQAAAAAAAAAAAAABAAIRAyEEEBITFCIxUf/aAAgBAQAGPwLxwU1oLTBGYCqk58bB2U4jZ//EABwQAQADAAIDAAAAAAAAAAAAAAEAESExQVFhcf/aAAgBAQABPyHjOQC04a+xAmI4mCWoZ5ECe/s//9oADAMBAAIAAwAAABDzz//EABkRAQEBAQEBAAAAAAAAAAAAAAERACEQMP/aAAgBAwEBPxCsO54PjS1//8QAGREBAQEBAQEAAAAAAAAAAAAAAQARITBA/9oACAECAQE/EAhLDd3aWv//xAAeEAEAAgIBBQAAAAAAAAAAAAABESEAMUFhUXGBkf/aAAgBAQABPxBYQgCo95xj2CBjw+s4oE5G+MD1NHi6gngYg+5//9k=';
         const baseUrl = 'https://mhizhaevents.co.uk/Luxmore/new/';
         const images = [
-            memorialImage,
             'IMG-20230329-WA0040.jpg',
             'IMG-20250815-WA0006.jpg',
             'IMG-20250817-WA0046.jpg',
@@ -359,11 +357,7 @@
             const slide = document.createElement('div');
             slide.className = 'slide' + (index === 0 ? ' active' : '');
             const imgElement = document.createElement('img');
-            if (img.startsWith('data:')) {
-                imgElement.src = img;
-            } else {
-                imgElement.src = baseUrl + img;
-            }
+            imgElement.src = baseUrl + img;
             imgElement.alt = `Image ${index + 1}`;
             slide.appendChild(imgElement);
             container.appendChild(slide);
@@ -376,35 +370,31 @@
         const progressBar = document.getElementById('progressBar');
         
         let isPlaying = true;
-        let autoPlayTimeout;
+        let autoPlayInterval;
         let progressInterval;
-        const defaultSlideDelay = 4000;
-        const firstSlideDelay = 10000;
-        
+        const slideDelay = 4000;
+        let progress = 0;
+
         // Hide loading message once first image loads
         slides[0].querySelector('img').onload = function() {
             loading.style.display = 'none';
         };
 
         function showSlide(n) {
-            currentSlide = (n + totalSlides) % totalSlides;
+            if (n >= totalSlides) {
+                currentSlide = 0;
+            } else if (n < 0) {
+                currentSlide = totalSlides - 1;
+            } else {
+                currentSlide = n;
+            }
 
             slides.forEach(slide => slide.classList.remove('active'));
             slides[currentSlide].classList.add('active');
 
             updateCounter();
             updateDots();
-
-            clearTimeout(autoPlayTimeout);
             resetProgress();
-
-            if (isPlaying) {
-                const delay = (currentSlide === 0) ? firstSlideDelay : defaultSlideDelay;
-                autoPlayTimeout = setTimeout(() => {
-                    showSlide(currentSlide + 1);
-                }, delay);
-                startProgress(delay);
-            }
         }
 
         function changeSlide(direction) {
@@ -426,6 +416,7 @@
             for (let i = 0; i < totalSlides; i++) {
                 const dot = document.createElement('span');
                 dot.className = 'dot';
+                if (i === 0) dot.classList.add('active');
                 dot.onclick = () => goToSlide(i);
                 dotsContainer.appendChild(dot);
             }
@@ -439,17 +430,18 @@
         }
 
         function startAutoPlay() {
-            if (isPlaying) return;
             isPlaying = true;
             playPauseBtn.innerHTML = '⏸ Pause';
-            showSlide(currentSlide);
+            autoPlayInterval = setInterval(() => {
+                changeSlide(1);
+            }, slideDelay);
+            startProgress();
         }
 
         function stopAutoPlay() {
-            if (!isPlaying) return;
             isPlaying = false;
             playPauseBtn.innerHTML = '▶ Play';
-            clearTimeout(autoPlayTimeout);
+            clearInterval(autoPlayInterval);
             stopProgress();
         }
 
@@ -461,20 +453,12 @@
             }
         }
 
-        function startProgress(duration) {
-            clearInterval(progressInterval);
-            progressBar.style.width = '0%';
-            const startTime = Date.now();
-
+        function startProgress() {
+            progress = 0;
             progressInterval = setInterval(() => {
-                const elapsedTime = Date.now() - startTime;
-                const progressPercentage = Math.min((elapsedTime / duration) * 100, 100);
-                progressBar.style.width = progressPercentage + '%';
-                
-                if (progressPercentage >= 100) {
-                    clearInterval(progressInterval);
-                }
-            }, 25);
+                progress += 0.5;
+                progressBar.style.width = (progress / slideDelay * 100) + '%';
+            }, 10);
         }
 
         function stopProgress() {
@@ -483,7 +467,11 @@
 
         function resetProgress() {
             stopProgress();
+            progress = 0;
             progressBar.style.width = '0%';
+            if (isPlaying) {
+                startProgress();
+            }
         }
 
         // Keyboard navigation
@@ -502,7 +490,8 @@
 
         // Initialize
         createDots();
-        showSlide(0); // Start the slideshow on the first slide
+        updateCounter();
+        startAutoPlay();
 
         // Fullscreen functionality
         function toggleFullscreen() {
