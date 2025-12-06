@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fullscreen Auto Slideshow</title>
+    <style>* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .slideshow-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: #000;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 20px;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 30px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .play-pause {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 24px;
+        }
+
+        .play-pause:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .counter {
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .indicator-dots {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 8px;
+            flex-wrap: wrap;
+            max-width: 90%;
+            justify-content: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: #667eea;
+            transform: scale(1.4);
+        }
+
+        .dot:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.1s linear;
+            z-index: 101;
+        }
+
+        .fullscreen-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+            z-index: 102;
+        }
+
+        .fullscreen-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }</style>
+</head>
+<body>
+<button data-vibe-node-id="fullscreen-button" class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+<div data-vibe-node-id="progress-bar-element" class="progress-bar" id="progressBar"></div>
+<div data-vibe-node-id="slideshow-container" class="slideshow-container"><div data-vibe-node-id="loading-message" class="loading" id="loading">Loading slideshow...</div>
+</div>
+<div data-vibe-node-id="indicator-dots-container" class="indicator-dots" id="dots"></div>
+<div data-vibe-node-id="controls-container" class="controls"><button data-vibe-node-id="prev-button" class="nav-btn" onclick="changeSlide(-1)">← Prev</button>
+<button data-vibe-node-id="play-pause-button" class="nav-btn play-pause" id="playPauseBtn" onclick="togglePlayPause()">⏸ Pause</button>
+<span data-vibe-node-id="counter-display" class="counter" id="counter">1 / 1</span>
+<button data-vibe-node-id="next-button" class="nav-btn" onclick="changeSlide(1)">Next →</button>
+</div>
+    <script>
+/* --- Vibe Database Connector ---
+This script is automatically injected into live projects to handle database interactions.
+It uses the existing project storage system to save and load form data without
+requiring any changes to the backend code.
+
+HOW TO USE:
+--------------------------------------------------------------------------------
+1. To Save Form Data:
+   - Add the 'data-vibe-form' attribute to your <form> tag.
+   - The value is a unique name for your form, e.g., "contact-form".
+   - Example: <form data-vibe-form="contact-form"> ... </form>
+   - The script will automatically capture submissions and save them.
+
+2. To Display Saved Data:
+   - Create a container in your HTML where you want the data to appear.
+     Example: <div id="results"></div>
+   - In your project's JavaScript, call window.vibe.loadData('your-form-name').
+   - This function returns a Promise that resolves with an array of all submissions.
+   - Example JavaScript:
+     ------------------
+     async function displaySubmissions() {
+         try {
+             // 'contact-form' must match the data-vibe-form attribute
+             const submissions = await window.vibe.loadData('contact-form');
+             const container = document.getElementById('results');
+             if (!container) return;
+             
+             if (!submissions || submissions.length === 0) {
+                 container.innerHTML = '<p>No submissions yet.</p>';
+                 return;
+             }
+
+             // Sort by timestamp, newest first
+             submissions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+             
+             container.innerHTML = '<ul>' + submissions.map(item => {
+                 const name = item.data.name || 'N/A';
+                 const email = item.data.email || 'N/A';
+                 const date = new Date(item.timestamp).toLocaleString();
+                 return `<li><strong>${name}</strong> (${email}) on ${date}</li>`;
+             }).join('') + '</ul>';
+
+         } catch(e) {
+             console.error("Failed to display submissions:", e);
+             const container = document.getElementById('results');
+             if(container) container.innerHTML = "<p style='color:red'>Could not load data.</p>";
+         }
+     }
+
+     // Run the function if the 'results' element exists
+     if (document.getElementById('results')) {
+        displaySubmissions();
+     }
+     ------------------
+
+LIMITATIONS:
+This method works by reading the entire list of submissions, adding a new one, and
+saving the entire list back. For low-traffic sites (e.g., a portfolio contact form),
+this is perfectly fine. However, if two users submit a form at the exact same moment,
+it is possible for one of the submissions to be lost. This is not recommended for
+applications that expect high volumes of concurrent submissions.
+--------------------------------------------------------------------------------
+*/
+(function() {
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx5p0NpHuIfVUuziW4VkqwTJERjAMpgIdKz0yCO4vVkFt38FerGObaxQQxqPJ2h8RB1yA/exec';
+    const USER_ID = 'user-e4a3399d-d41c-423f-9f0d-05603a1b4e4b';
+    const PROJECT_ID = 'slide-1';
+    const CHUNK_SIZE = 1500;
+
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('YOUR_APPS_SCRIPT') || !USER_ID || !PROJECT_ID) {
+        console.warn('VibeDB: Configuration is missing. Database features are disabled.');
+        window.vibe = { loadData: () => Promise.resolve([]) };
+        return;
+    }
+
+    const getFormDbId = (formId) => `${PROJECT_ID}__form__${formId}`;
+
+    function jsonpRequest(action, params = {}) {
+        return new Promise((resolve, reject) => {
+            const callbackName = 'vibe_jsonp_callback_' + Math.round(100000 * Math.random());
+            const script = document.createElement('script');
+            let url = `${APPS_SCRIPT_URL}?action=${action}&callback=${callbackName}`;
+            for (const key in params) {
+                url += `&${key}=${encodeURIComponent(params[key])}`;
+            }
+            script.src = url;
+            window[callbackName] = (data) => {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                if (data.status === 'success') resolve(data.data);
+                else reject(new Error(data.message || 'API Error'));
+            };
+            script.onerror = () => {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                reject(new Error('API request failed.'));
+            };
+            document.body.appendChild(script);
+        });
+    }
+    
+    function decompressData(dataString) {
+        const binaryString = atob(dataString);
+        const uint8Array = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            uint8Array[i] = binaryString.charCodeAt(i);
+        }
+        const jsonString = new TextDecoder().decode(uint8Array);
+        return JSON.parse(jsonString);
+    }
+
+    async function saveProjectInChunks(projectId, data) {
+        const jsonString = JSON.stringify(data);
+        const uint8Array = new TextEncoder().encode(jsonString);
+        let binaryString = '';
+        uint8Array.forEach(byte => { binaryString += String.fromCharCode(byte); });
+        const dataString = btoa(binaryString);
+
+        const chunks = [];
+        for (let i = 0; i < dataString.length; i += CHUNK_SIZE) {
+            chunks.push(dataString.substring(i, i + CHUNK_SIZE));
+        }
+
+        for (let i = 0; i < chunks.length; i++) {
+            await jsonpRequest('saveProjectChunk', {
+                userId: USER_ID,
+                projectId: projectId,
+                chunkData: chunks[i],
+                chunkIndex: i,
+                totalChunks: chunks.length,
+                compressed: false,
+            });
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+    }
+
+    async function saveFormData(formId, formData) {
+        const formDbId = getFormDbId(formId);
+        let submissions = [];
+        try {
+            const existingData = await window.vibe.loadData(formId);
+            if (Array.isArray(existingData)) {
+                submissions = existingData;
+            }
+        } catch (e) {
+            // This is expected if it's the first submission, so we can ignore it.
+            console.log('No existing data for this form, creating new list.');
+        }
+        
+        submissions.push({
+            timestamp: new Date().toISOString(),
+            data: formData
+        });
+
+        await saveProjectInChunks(formDbId, submissions);
+    }
+
+    // --- Public API ---
+    window.vibe = {
+        loadData: async function(formId) {
+            if (!formId) {
+                return Promise.reject(new Error('formId is required.'));
+            }
+            try {
+                const formDbId = getFormDbId(formId);
+                const compressedData = await jsonpRequest('loadProject', { userId: USER_ID, projectId: formDbId });
+                return decompressData(compressedData);
+            } catch (e) {
+                 // If loading fails, it likely means no data exists yet. Return an empty array.
+                return [];
+            }
+        }
+    };
+
+    // --- Form Interceptor ---
+    document.addEventListener('submit', async (e) => {
+        const form = e.target;
+        const formId = form.getAttribute('data-vibe-form');
+        if (!formId) return;
+
+        e.preventDefault();
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
+        let originalButtonContent = '';
+        if (submitButton) {
+            originalButtonContent = submitButton.innerHTML || submitButton.value;
+            submitButton.disabled = true;
+            submitButton.value = 'Submitting...';
+            submitButton.innerHTML = 'Submitting...';
+        }
+
+        try {
+            await saveFormData(formId, data);
+            form.innerHTML = '<p style="text-align: center; color: green; padding: 20px;">Thank you for your submission!</p>';
+        } catch (error) {
+            console.error('Form submission failed:', error);
+            const errorEl = document.createElement('p');
+            errorEl.style.color = 'red';
+            errorEl.textContent = 'Submission failed. Please try again later.';
+            form.appendChild(errorEl);
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.value = originalButtonContent;
+                submitButton.innerHTML = originalButtonContent;
+            }
+        }
+    }, true);
+})();
+</script>
+    <script>(function() {const baseUrl = 'https://1stradiant.github.io/mhizhaEvents/Luxmore/new/';
+
+const images = [
+            'IMG-20230329-WA0040.jpg',
+            'IMG-20250815-WA0006.jpg',
+            'IMG-20250817-WA0046.jpg',
+            'IMG-20250817-WA0053.jpg',
+            'IMG-20251021-WA0000.jpg',
+            'IMG-20251021-WA0001.jpg',
+            'IMG-20251021-WA0002.jpg',
+            'IMG-20251021-WA0003.jpg',
+            'IMG-20251021-WA0004.jpg',
+            'IMG-20251021-WA0005.jpg',
+            'IMG-20251021-WA0006.jpg',
+            'IMG-20251021-WA0007.jpg',
+            'IMG-20251021-WA0008.jpg',
+            'IMG-20251021-WA0009.jpg',
+            'IMG-20251021-WA0010.jpg',
+            'IMG-20251021-WA0011.jpg',
+            'IMG-20251021-WA0012.jpg',
+            'IMG-20251021-WA0013.jpg',
+            'IMG-20251021-WA0014.jpg',
+            'IMG-20251021-WA0015.jpg',
+            'IMG-20251021-WA0016.jpg',
+            'IMG-20251021-WA0017.jpg',
+            'IMG-20251021-WA0018.jpg',
+            'IMG-20251021-WA0019.jpg',
+            'IMG-20251021-WA0020.jpg',
+            'IMG-20251021-WA0022.jpg',
+            'IMG-20251021-WA0023.jpg',
+            'IMG-20251021-WA0025.jpg',
+            'IMG-20251021-WA0026.jpg',
+            'IMG-20251021-WA0028.jpg',
+            'IMG-20251021-WA0030.jpg',
+            'IMG-20251021-WA0032.jpg',
+            'IMG-20251021-WA0033.jpg',
+            'IMG-20251021-WA0034.jpg',
+            'IMG-20251021-WA0035.jpg',
+            'IMG-20251021-WA0036.jpg',
+            'IMG-20251021-WA0037.jpg',
+            'IMG-20251021-WA0039.jpg',
+            'IMG-20251021-WA0040.jpg',
+            'IMG-20251021-WA0045.jpg',
+            'IMG-20251021-WA0046.jpg',
+            'IMG-20251021-WA0048.jpg',
+            'IMG-20251021-WA0051.jpg',
+            'IMG-20251021-WA0053.jpg',
+            'IMG-20251021-WA0055.jpg',
+            'IMG-20251021-WA0056.jpg',
+            'IMG-20251021-WA0059.jpg',
+            'IMG-20251021-WA0060.jpg',
+            'IMG-20251021-WA0068.jpg',
+            'IMG-20251021-WA0069.jpg',
+            'IMG-20251021-WA0071.jpg',
+            'IMG-20251021-WA0072.jpg',
+            'IMG-20251021-WA0073.jpg',
+            'IMG-20251021-WA0074.jpg',
+            'IMG-20251021-WA0076.jpg',
+            'IMG-20251021-WA0077.jpg',
+            'IMG-20251021-WA0078.jpg',
+            'IMG-20251021-WA0079.jpg',
+            'IMG-20251021-WA0082.jpg',
+            'IMG-20251021-WA0084.jpg',
+            'IMG-20251021-WA0086.jpg',
+            'IMG-20251021-WA0087.jpg',
+            'IMG-20251021-WA0088.jpg',
+            'IMG-20251021-WA0089.jpg',
+            'IMG-20251021-WA0090.jpg',
+            'IMG-20251021-WA0091.jpg',
+            'IMG-20251021-WA0092.jpg',
+            'IMG-20251021-WA0094.jpg',
+            'IMG-20251021-WA0095.jpg',
+            'IMG-20251021-WA0096.jpg',
+            'IMG-20251021-WA0097.jpg',
+            'IMG-20251021-WA0098.jpg',
+            'IMG-20251021-WA0100.jpg',
+            'IMG-20251021-WA0101.jpg',
+            'IMG-20251021-WA0102.jpg',
+            'IMG-20251021-WA0103.jpg',
+            'IMG-20251021-WA0104.jpg',
+            'IMG-20251021-WA0105.jpg',
+            'IMG-20251021-WA0106.jpg',
+            'IMG-20251021-WA0107.jpg',
+            'IMG-20251021-WA0108.jpg',
+            'IMG-20251021-WA0109.jpg',
+            'IMG-20251021-WA0110.jpg',
+            'IMG-20251021-WA0111.jpg',
+            'IMG-20251021-WA0112.jpg',
+            'IMG-20251021-WA0113.jpg',
+            'IMG-20251021-WA0114.jpg',
+            'IMG-20251021-WA0115.jpg',
+            'IMG-20251021-WA0116.jpg',
+            'IMG-20251021-WA0117.jpg',
+            'IMG-20251021-WA0118.jpg',
+            'IMG-20251021-WA0119.jpg',
+            'IMG-20251021-WA0120.jpg',
+            'IMG-20251021-WA0121.jpg',
+            'IMG-20251021-WA0123.jpg',
+            'IMG-20251021-WA0124.jpg',
+            'IMG-20251021-WA0125.jpg',
+            'IMG-20251021-WA0126.jpg',
+            'IMG-20251021-WA0127.jpg',
+            'IMG-20251021-WA0128.jpg',
+            'IMG-20251021-WA0129.jpg',
+            'IMG-20251021-WA0130.jpg',
+            'IMG-20251021-WA0131.jpg',
+            'IMG-20251021-WA0132.jpg',
+            'IMG-20251021-WA0133.jpg',
+            'IMG-20251021-WA0134.jpg',
+            'IMG-20251021-WA0135.jpg',
+            'IMG-20251021-WA0136.jpg',
+            'IMG-20251021-WA0137.jpg',
+            'IMG-20251021-WA0139.jpg',
+            'IMG-20251021-WA0140.jpg',
+            'IMG-20251021-WA0141.jpg',
+            'IMG-20251021-WA0142.jpg',
+            'IMG-20251021-WA0144.jpg',
+            'IMG-20251021-WA0145.jpg',
+            'IMG-20251021-WA0146.jpg',
+            'IMG-20251021-WA0147.jpg',
+            'IMG-20251021-WA0148.jpg',
+            'IMG-20251021-WA0149.jpg',
+            'IMG-20251021-WA0150.jpg',
+            'IMG-20251021-WA0151.jpg',
+            'IMG-20251021-WA0152.jpg',
+            'IMG-20251021-WA0153.jpg',
+            'IMG-20251021-WA0154.jpg',
+            'IMG-20251021-WA0155.jpg',
+            'IMG-20251021-WA0156.jpg',
+            'IMG-20251021-WA0157.jpg',
+            'IMG-20251021-WA0158.jpg',
+            'IMG-20251021-WA0159.jpg',
+            'IMG-20251021-WA0160.jpg',
+            'IMG-20251021-WA0161.jpg',
+            'IMG-20251021-WA0162.jpg',
+            'IMG-20251021-WA0175.jpg',
+            'IMG-20251021-WA0176.jpg',
+            'IMG-20251021-WA0177.jpg',
+            'IMG-20251021-WA0178.jpg',
+            'IMG-20251021-WA0180.jpg',
+            'IMG-20251021-WA0181.jpg',
+            'IMG-20251021-WA0185.jpg',
+            'IMG-20251021-WA0187.jpg',
+            'IMG-20251021-WA0188.jpg',
+            'IMG-20251021-WA0190.jpg',
+            'IMG-20251021-WA0191.jpg',
+            'IMG-20251021-WA0192.jpg',
+            'IMG-20251021-WA0194.jpg'
+        ];
+
+const container = document.querySelector('.slideshow-container');
+        const loading = document.getElementById('loading');
+        
+        images.forEach((img, index) => {
+            const slide = document.createElement('div');
+            slide.className = 'slide' + (index === 0 ? ' active' : '');
+            const imgElement = document.createElement('img');
+            imgElement.src = baseUrl + img;
+            imgElement.alt = `Image ${index + 1}`;
+            slide.appendChild(imgElement);
+            container.appendChild(slide);
+        });
+
+let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const progressBar = document.getElementById('progressBar');
+        
+        let isPlaying = true;
+        let autoPlayInterval;
+        let progressInterval;
+        const slideDelay = 4000;
+        let progress = 0;
+
+slides[0].querySelector('img').onload = function() {
+            loading.style.display = 'none';
+        };
+
+function showSlide(n) {
+            if (n >= totalSlides) {
+                currentSlide = 0;
+            } else if (n < 0) {
+                currentSlide = totalSlides - 1;
+            } else {
+                currentSlide = n;
+            }
+
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[currentSlide].classList.add('active');
+
+            updateCounter();
+            updateDots();
+            resetProgress();
+        }
+
+function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+function goToSlide(n) {
+            showSlide(n);
+        }
+
+function updateCounter() {
+            document.getElementById('counter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+        }
+
+function createDots() {
+            const dotsContainer = document.getElementById('dots');
+            dotsContainer.innerHTML = '';
+            
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('span');
+                dot.className = 'dot';
+                if (i === 0) dot.classList.add('active');
+                dot.onclick = () => goToSlide(i);
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+function updateDots() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+function startAutoPlay() {
+            isPlaying = true;
+            playPauseBtn.innerHTML = '⏸ Pause';
+            autoPlayInterval = setInterval(() => {
+                changeSlide(1);
+            }, slideDelay);
+            startProgress();
+        }
+
+function stopAutoPlay() {
+            isPlaying = false;
+            playPauseBtn.innerHTML = '▶ Play';
+            clearInterval(autoPlayInterval);
+            stopProgress();
+        }
+
+function togglePlayPause() {
+            if (isPlaying) {
+                stopAutoPlay();
+            } else {
+                startAutoPlay();
+            }
+        }
+
+function startProgress() {
+            progress = 0;
+            progressInterval = setInterval(() => {
+                progress += 0.5;
+                progressBar.style.width = (progress / slideDelay * 100) + '%';
+            }, 10);
+        }
+
+function stopProgress() {
+            clearInterval(progressInterval);
+        }
+
+function resetProgress() {
+            stopProgress();
+            progress = 0;
+            progressBar.style.width = '0%';
+            if (isPlaying) {
+                startProgress();
+            }
+        }
+
+document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            }
+            if (e.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+            if (e.key === ' ') {
+                e.preventDefault();
+                togglePlayPause();
+            }
+        });
+
+        // Initialize
+        createDots();
+        updateCounter();
+        startAutoPlay();
+
+        
+
+        // Update button text based on fullscreen state
+        document.addEventListener('fullscreenchange', () => {
+            const btn = document.getElementById('fullscreenBtn');
+            if (document.fullscreenElement) {
+                btn.innerHTML = '⛶ Exit Fullscreen';
+            } else {
+                btn.innerHTML = '⛶ Fullscreen';
+            }
+        });
+
+        // Check URL hash for fullscreen on load
+        window.addEventListener('load', () => {
+            if (window.location.hash === '#fullscreen') {
+                setTimeout(() => {
+                    toggleFullscreen();
+                }, 100);
+            }
+        });
+
+        // Check hash changes
+        window.addEventListener('hashchange', () => {
+            if (window.location.hash === '#fullscreen' && !document.fullscreenElement) {
+                toggleFullscreen();
+            }
+        });
+
+function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('Error attempting to enable fullscreen:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }})();</script>
+</body>
+</html>
